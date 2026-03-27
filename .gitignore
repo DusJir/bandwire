@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-pwa/
+release/
+distr/
+ICONS/
+resources/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+*.log
+
+# OS
+desktop.ini
+
+# Electron builder
+.electron-builder-cache/
+/bandwire-0.5.0.zip
+/bandwire-0.3.2.zip
+/bandwire-0.3.3.zip
+/bandwire-0.3.4.zip
+/bandwire-0.3.5.zip
+/bandwire-0.4.0.zip
+/bandwire-0.5.0.zip
+/bandwire-0.6.1.zip
+/bandwire-0.6.2.zip
+/bandwire-0.6.3.zip
+/bandwire-0.6.5.zip
+/bandwire-0.6.7.zip
+/bandwire-0.6.8.zip
+/bandwire-0.6.9.zip
+/bandwire-0.7.0.zip
+/bandwire-0.7.1.zip
+/bandwire-0.7.2.zip
+/bandwire-0.7.3.zip
+/bandwire-0.7.4.zip
+/bandwire-0.7.5.zip
+/bandwire-0.8.0.zip
+/bandwire-0.8.1.zip
+/bandwire-0.8.2.zip
+/bandwire-0.8.3.zip
+/bandwire-0.8.4.zip
+/bandwire-0.8.5.zip
+/bandwire-0.8.6.zip
+/bandwire-0.9.0.zip
+/bandwire-0.9.1.zip
+/ICONS.ZIP
