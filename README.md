@@ -4,6 +4,8 @@
 
 Draw clean, professional signal routing diagrams — what's plugged into what, with which cable. Built for touring musicians, backline techs, and anyone who needs to document a live rig without fighting a spreadsheet or a generic flowchart tool.
 
+![BandWire-1 0 0-scene1](https://github.com/user-attachments/assets/be95f8eb-307d-4631-adf6-150ebc119ae1)
+
 ---
 
 ## Features
@@ -20,6 +22,8 @@ Draw clean, professional signal routing diagrams — what's plugged into what, w
 - **Light & dark theme**
 - **PWA support** — runs in browser, installable on tablets (iPad, Android)
 
+![BandWire-1 0 0-scene2](https://github.com/user-attachments/assets/ea75508e-b381-4127-ad2a-cfe6107e0e5e)
+
 ---
 
 ## Rack Scenes
@@ -33,6 +37,8 @@ Rack nodes are containers with their own internal canvas. The workflow:
 5. Port gateway nodes appear automatically — **blue (↓ IN)** for signals arriving from outside, **green (OUT ↑)** for signals leaving
 6. Wire your internal devices between the gateways
 7. Hit **↩ Back** to return to the main canvas
+
+![BandWire-1 0 0-scene3](https://github.com/user-attachments/assets/7206f4c8-7a37-4b36-83c6-cd896f840d77)
 
 ---
 
@@ -114,6 +120,8 @@ electron/
   main.js             Electron main + IPC
   preload.js          Context bridge
 ```
+
+![BandWire-1 0 0-scene4](https://github.com/user-attachments/assets/3d0aa4cc-385d-4104-804c-bb8223a26256)
 
 ---
 
