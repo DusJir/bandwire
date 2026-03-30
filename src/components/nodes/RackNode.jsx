@@ -6,7 +6,7 @@ const BODY_H = 40
 const SLOT_H = 20
 
 export default memo(function RackNode({ id, data, selected }) {
-  const { label = 'Rack', color, notes, inputs = [], outputs = [] } = data
+  const { label = 'Rack', color, notes, inputs = [], outputs = [], physicalDevice } = data
   const scene = useStore(s => s.scenes['rack-' + id])
   const nodeCount = (scene?.nodes || []).filter(n => n.type !== 'rackPort').length
 
@@ -62,7 +62,10 @@ export default memo(function RackNode({ id, data, selected }) {
         <div className="hw-node-labels">
           <div className="hw-node-label">{label}</div>
           <div className="hw-node-model">
-            {nodeCount > 0 ? `${nodeCount} device${nodeCount !== 1 ? 's' : ''} · dbl-click` : 'double-click to open'}
+            {physicalDevice
+              ? physicalDevice
+              : nodeCount > 0 ? `${nodeCount} device${nodeCount !== 1 ? 's' : ''} · dbl-click` : 'double-click to open'
+            }
           </div>
         </div>
         <div className="rack-thumb-badge">↗</div>

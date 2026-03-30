@@ -13,7 +13,9 @@ export default function Sidebar() {
   const { t } = useTranslation('t')
   const iconsLibrary  = useStore(s => s.iconsLibrary)
   const deviceLibrary = useStore(s => s.deviceLibrary)
-  const openModal     = useStore(s => s.openModal)
+  const openModal          = useStore(s => s.openModal)
+  const deleteCustomDevice = useStore(s => s.deleteCustomDevice)
+  const scenes             = useStore(s => s.scenes)
   const sceneStack    = useStore(s => s.sceneStack)
   const isInRack      = sceneStack.length > 1
 
@@ -81,6 +83,22 @@ export default function Sidebar() {
     allItems.forEach(i => i.tags?.forEach(t => set.add(t)))
     return [...set].sort()
   }, [allItems])
+
+  const handleDeleteDevice = (item) => {
+    let usages = 0
+    for (const scene of Object.values(scenes || {})) {
+      usages += (scene?.nodes || []).filter(n => n.data?.label === item.name).length
+    }
+    const msg = usages > 0
+      ? `"${item.name}" is used in ${usages} place${usages>1?'s':''} on the canvas. Existing nodes will keep their current state but lose the device definition. Delete anyway?`
+      : `Delete "${item.name}"?`
+    openModal('confirm', {
+      title: 'Delete Custom Device',
+      message: msg,
+      confirmLabel: 'Delete',
+      onConfirm: () => deleteCustomDevice(item.id),
+    })
+  }
 
   return (
     <aside className="sidebar">
@@ -163,6 +181,11 @@ export default function Sidebar() {
                       : <span className="sidebar-icon-emoji">📦</span>
                     }
                     <span className="sidebar-icon-name">{item.label}</span>
+                    <button
+                      className="sidebar-icon-delete-badge"
+                      title="Delete custom device"
+                      onClick={e => { e.stopPropagation(); handleDeleteDevice(item) }}
+                    >×</button>
                   </div>
                 ))}
               </div>

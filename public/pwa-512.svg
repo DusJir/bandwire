@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="32" fill="#6366f1"/>
+  <text x="256" y="180" text-anchor="middle" font-size="128" font-weight="900" 
+        fill="white" font-family="sans-serif">⚡</text>
+  <text x="256" y="340" text-anchor="middle" font-size="58" font-weight="700"
+        fill="white" font-family="sans-serif">BAND</text>
+  <text x="256" y="410" text-anchor="middle" font-size="58" font-weight="700"
+        fill="white" font-family="sans-serif">WIRE</text>
+</svg>
