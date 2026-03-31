@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <rect x="2" y="20" width="60" height="24" style="fill:rgb(26,1,1);"/>
+    <clipPath id="_clip1">
+        <path d="M62.833,20L62.833,44C62.833,44.46 62.46,44.833 62,44.833L2,44.833C1.54,44.833 1.167,44.46 1.167,44L1.167,20C1.167,19.54 1.54,19.167 2,19.167L62,19.167C62.46,19.167 62.833,19.54 62.833,20ZM61.167,20.833L2.833,20.833L2.833,43.167L61.167,43.167L61.167,20.833Z"/>
+    </clipPath>
+    <g clip-path="url(#_clip1)">
+        <use xlink:href="#_Image2" x="1.167" y="19.167" width="62px" height="26px"/>
+    </g>
+    <circle cx="41.383" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="48.05" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="54.716" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="34.716" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="30" y="22" width="30" height="8" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="4" y="22" width="24" height="20" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <path d="M11.329,38.496L11.329,25.504L16.203,25.504C17.196,25.504 17.992,25.636 18.591,25.899C19.191,26.162 19.661,26.566 20,27.113C20.34,27.659 20.51,28.231 20.51,28.828C20.51,29.383 20.359,29.906 20.058,30.396C19.757,30.886 19.302,31.282 18.693,31.584C19.479,31.814 20.083,32.207 20.505,32.762C20.928,33.317 21.139,33.973 21.139,34.729C21.139,35.338 21.011,35.904 20.754,36.426C20.497,36.949 20.179,37.352 19.801,37.636C19.423,37.92 18.949,38.134 18.379,38.278C17.809,38.423 17.11,38.496 16.283,38.496L11.329,38.496ZM13.048,30.963L15.858,30.963C16.62,30.963 17.166,30.913 17.497,30.813C17.934,30.683 18.263,30.467 18.485,30.166C18.707,29.864 18.817,29.486 18.817,29.031C18.817,28.6 18.714,28.221 18.507,27.893C18.3,27.565 18.005,27.34 17.621,27.219C17.237,27.098 16.578,27.037 15.645,27.037L13.048,27.037L13.048,30.963ZM13.048,36.963L16.283,36.963C16.838,36.963 17.228,36.942 17.453,36.9C17.848,36.83 18.179,36.711 18.445,36.546C18.711,36.381 18.93,36.14 19.101,35.824C19.272,35.508 19.358,35.143 19.358,34.729C19.358,34.245 19.234,33.824 18.986,33.467C18.738,33.109 18.393,32.858 17.953,32.713C17.513,32.569 16.88,32.496 16.052,32.496L13.048,32.496L13.048,36.963Z" style="fill:white;fill-rule:nonzero;"/>
+    <defs>
+        <image id="_Image2" width="62px" height="26px" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAAaCAYAAADv/O9kAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAOklEQVRYhe3PMQEAIAzAMMC/5yFjRxoF7Z2ZOaC3HbClcU3jmsY1jWsa1zSuaVzTuKZxTeOaxjWNaz5puQQwycmVzAAAAABJRU5ErkJggg=="/>
+    </defs>
+</svg>
