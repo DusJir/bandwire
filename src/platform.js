@@ -164,6 +164,18 @@ export const platform = {
     return true
   },
 
+  // Settings persistence
+  saveSettings: async (content) => {
+    if (isElectron()) return window.electronAPI.saveSettings(content)
+    await dbSet('settings', content)
+    return true
+  },
+
+  loadSettings: async () => {
+    if (isElectron()) return window.electronAPI.loadSettings()
+    return await dbGet('settings') || null
+  },
+
   // Feature flags
   isElectron: isElectron,
   isPWA: () => !isElectron() && 'serviceWorker' in navigator,

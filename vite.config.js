@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     isPWA && VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['public/icons/**/*'],
+      includeAssets: ['icons/**/*'],
       manifest: {
         name: 'BandWire',
         short_name: 'BandWire',

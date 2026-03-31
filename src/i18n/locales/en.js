@@ -106,5 +106,15 @@ export default {
   mLegendFormat: 'Legend format',
   mIconLibraryText: 'Place SVG files in Documents/BandWire/icons/{category}/device_name.svg. Best results with white icons on transparent background, 64×64 px artboard. Underscores in filenames become spaces in labels. Restart to reload.',
   mIconLibraryAD2: 'When exporting from Affinity Designer 2: use SVG (for export) preset, enable Flatten transforms and Export text as curves, disable metadata embedding. Ensure the exported SVG has a viewBox attribute.',
-  mProjectsText: 'Projects are saved as .sflow files (JSON). All scenes, devices, and layout are stored in one file.',
+  mProjectsText: 'Projects are saved as .sflow files (JSON). All scenes, devices, cable types, and layout are stored in one file. Icons are not embedded — they are resolved from the icon library on load.',
+  mSettings: 'Settings',
+  mSettingsText: 'Click ⚙ in the toolbar to open Settings. All settings are saved automatically and persist across sessions.',
+  mSettingsList: [
+    ['Dark / light mode', 'Toggle between dark and light theme'],
+    ['Language', 'Change the display language (7 languages available)'],
+    ['Warn on connector mismatch', 'Highlight cables in red when the cable type is not compatible with the connected port connector'],
+    ['Default export format', 'Pre-select HTML or PNG when opening the Export dialog'],
+    ['Include signal legend by default', 'Pre-check the legend option in the Export dialog'],
+    ['Color export by default', 'Pre-check the color option in the Export dialog'],
+  ],
 }

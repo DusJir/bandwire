@@ -33,7 +33,6 @@ const useStore = create((set, get) => ({
     const state   = get()
 
     // Find rack node data to get its defined ports
-    const mainScene = state.scenes.main
     let rackNode = null
     for (const scene of Object.values(state.scenes)) {
       const found = scene?.nodes?.find(n => n.id === rackNodeId)
@@ -123,7 +122,7 @@ const useStore = create((set, get) => ({
     const s = get()
     if (platform.isBrowser()) {
       const { scenes, projectName, deviceLibrary } = s
-      platform.autoSave(JSON.stringify({ version: '0.5.1', projectName, scenes, deviceLibrary }, null, 2))
+      platform.autoSave(JSON.stringify({ version: '1.0', projectName, scenes, deviceLibrary }, null, 2))
     }
   },
 
@@ -195,7 +194,6 @@ const useStore = create((set, get) => ({
   iconsLibrary: {},
 
   loadIcons: async () => {
-    if (!window.electronAPI) return
     const icons = await platform.loadIcons()
     const lib = {}
     for (const icon of icons) {
@@ -221,6 +219,13 @@ const useStore = create((set, get) => ({
   // device: { id, name, tags:[], source:'factory'|'custom',
   //           iconSrc, defaultInputs:[], defaultOutputs:[], notes }
   deviceLibrary: [],
+  customCableTypes: [],  // user-defined cable types
+  settings: {
+    enforceConnectorTypes: false,  // warn when cable/connector mismatch
+    defaultExportFormat: 'html',   // 'html' | 'png'
+    defaultExportLegend: true,
+    defaultExportColor:  true,
+  },
 
   loadDeviceLibrary: async () => {
     if (!window.electronAPI) return
@@ -231,6 +236,37 @@ const useStore = create((set, get) => ({
   saveDeviceLibrary: async () => {
     const { deviceLibrary } = get()
     await platform.saveDeviceLibrary(JSON.stringify(deviceLibrary, null, 2))
+  },
+
+  // Custom cable types
+  addCustomCableType: (cable) => {
+    const c = { ...cable, id: cable.id || 'cable-' + crypto.randomUUID().slice(0,8), source: 'custom' }
+    set(state => ({ customCableTypes: [...state.customCableTypes, c] }))
+    get().saveDeviceLibrary()
+  },
+  deleteCustomCableType: (id) => {
+    set(state => ({ customCableTypes: state.customCableTypes.filter(c => c.id !== id) }))
+    get().saveDeviceLibrary()
+  },
+
+  // Settings
+  updateSettings: (patch) => {
+    set(state => ({ settings: { ...state.settings, ...patch } }))
+    // Persist immediately — include theme alongside settings
+    const updated = { ...get().settings, ...patch }
+    const theme = get().theme
+    platform.saveSettings(JSON.stringify({ ...updated, _theme: theme }, null, 2))
+  },
+
+  loadSettings: async () => {
+    const raw = await platform.loadSettings()
+    if (!raw) return
+    try {
+      const saved = JSON.parse(raw)
+      const { _theme, ...settingsOnly } = saved
+      set(state => ({ settings: { ...state.settings, ...settingsOnly } }))
+      if (_theme) set({ theme: _theme })
+    } catch {}
   },
 
   addCustomDevice: (device) => {
@@ -253,12 +289,19 @@ const useStore = create((set, get) => ({
 
   // ── UI ───────────────────────────────────────────────────────
   theme: 'dark',
-  toggleTheme: () => set(s => ({ theme: s.theme === 'dark' ? 'light' : 'dark' })),
+  toggleTheme: () => {
+    const next = get().theme === 'dark' ? 'light' : 'dark'
+    set({ theme: next })
+    // Persist theme change immediately
+    const settings = get().settings
+    platform.saveSettings(JSON.stringify({ ...settings, _theme: next }, null, 2))
+  },
 
   // Active modal: null | 'addDevice' | 'export' | 'manual'
   activeModal: null,
-  openModal:  (name) => set({ activeModal: name }),
-  closeModal: ()     => set({ activeModal: null }),
+  modalPayload: null,
+  openModal:  (name, payload) => set({ activeModal: name, modalPayload: payload || null }),
+  closeModal: ()               => set({ activeModal: null, modalPayload: null }),
 
   // ── Project ──────────────────────────────────────────────────
   projectName:     'Untitled',
@@ -283,7 +326,7 @@ const useStore = create((set, get) => ({
       return out
     }
     const content = JSON.stringify({
-      version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary
+      version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary, customCableTypes: get().customCableTypes
     }, null, 2)
     const fp = await platform.saveProject(content, currentFilePath)
     if (fp) {
@@ -338,7 +381,8 @@ const useStore = create((set, get) => ({
       sceneStack:      ['main'],
       projectName:     data.projectName || 'Untitled',
       currentFilePath: result.filePath,
-      deviceLibrary:   data.deviceLibrary || [],
+      deviceLibrary:      data.deviceLibrary      || [],
+      customCableTypes:   data.customCableTypes   || [],
       isDirty:         false,
       selectedNodeId:  null,
       selectedEdgeId:  null,

@@ -8,9 +8,9 @@ import { APP_NAME, APP_VERSION } from '../../version'
 
 export default function ExportModal() {
   const { t } = useTranslation('t')
-  const { closeModal, scenes, iconsLibrary } = useStore()
-  const [color,     setColor]     = useState(true)
-  const [legend,    setLegend]    = useState(true)
+  const { closeModal, scenes, iconsLibrary, settings } = useStore()
+  const [color,     setColor]     = useState(settings?.defaultExportColor  ?? true)
+  const [legend,    setLegend]    = useState(settings?.defaultExportLegend ?? true)
   const [allScenes, setAllScenes] = useState(false)
   const [exporting,    setExporting]    = useState(null) // 'png' | 'html' | null
   const [exportError,  setExportError]  = useState(null)
@@ -255,10 +255,14 @@ export default function ExportModal() {
         )}
         <div className="modal-footer">
           <button className="props-btn" onClick={closeModal} disabled={busy}>{t('cancel')}</button>
-          <button className="props-btn export-btn-png" onClick={exportPng} disabled={busy}>
+          <button
+            className={'props-btn' + (settings?.defaultExportFormat !== 'html' ? ' accent' : '')}
+            onClick={exportPng} disabled={busy}>
             {exporting === 'png' ? t('exporting') : '↓ PNG'}
           </button>
-          <button className="props-btn accent" onClick={exportHtml} disabled={busy}>
+          <button
+            className={'props-btn' + (settings?.defaultExportFormat === 'html' ? ' accent' : '')}
+            onClick={exportHtml} disabled={busy}>
             {exporting === 'html' ? t('exporting') : '↓ HTML'}
           </button>
         </div>

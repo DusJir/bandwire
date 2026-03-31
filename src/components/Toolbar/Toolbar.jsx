@@ -1,15 +1,48 @@
 import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
-import { CABLE_TYPES, CABLE_GROUPS } from '../../constants/cableTypes'
-import { APP_NAME, APP_VERSION } from '../../version'
+import { APP_VERSION } from '../../version'
 import LangSelector from './LangSelector'
+
+import logoSvg        from '../../assets/app-icons/bandwire-logo.svg'
+import newSvg         from '../../assets/app-icons/app-new.svg'
+import newInvSvg      from '../../assets/app-icons/app-new-inv.svg'
+import saveSvg        from '../../assets/app-icons/app-save.svg'
+import saveInvSvg     from '../../assets/app-icons/app-save-inv.svg'
+import openSvg        from '../../assets/app-icons/app-open.svg'
+import openInvSvg     from '../../assets/app-icons/app-open-inv.svg'
+import exportSvg      from '../../assets/app-icons/app-export.svg'
+import exportInvSvg   from '../../assets/app-icons/app-export-inv.svg'
+import themeSvg       from '../../assets/app-icons/app-theme.svg'
+import themeInvSvg    from '../../assets/app-icons/app-theme-inv.svg'
+import settingsSvg    from '../../assets/app-icons/app-settings.svg'
+import settingsInvSvg from '../../assets/app-icons/app-settings-inv.svg'
+import manualSvg      from '../../assets/app-icons/app-manual.svg'
+import manualInvSvg   from '../../assets/app-icons/app-manual-inv.svg'
+
+const ICONS = {
+  'app-new':      [newSvg,      newInvSvg],
+  'app-save':     [saveSvg,     saveInvSvg],
+  'app-open':     [openSvg,     openInvSvg],
+  'app-export':   [exportSvg,   exportInvSvg],
+  'app-theme':    [themeSvg,    themeInvSvg],
+  'app-settings': [settingsSvg, settingsInvSvg],
+  'app-manual':   [manualSvg,   manualInvSvg],
+}
+
+function TbIcon({ name, size = 16 }) {
+  const theme = useStore(s => s.theme)
+  const [normal, inv] = ICONS[name] || []
+  const src = theme === 'dark' ? inv : normal
+  return src
+    ? <img src={src} width={size} height={size} alt="" draggable={false} style={{flexShrink:0, opacity:0.9}} />
+    : null
+}
 
 export default function Toolbar() {
   const { t } = useTranslation('t')
   const {
     projectName, isDirty, theme,
     saveProject, loadProject, newProject,
-    selectedCableType, setSelectedCableType,
     toggleTheme, openModal,
     sceneStack, scenes, navigateToScene, exitScene,
   } = useStore()
@@ -23,27 +56,24 @@ export default function Toolbar() {
 
   return (
     <div className="toolbar">
-      <span className="toolbar-brand">⚡ {t('appName')}</span>
-      <div className="toolbar-sep" />
-
-      <button className="tb-btn" onClick={newProject}>
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h7l3 3v9H2V2zm7-1H1v13h12V4.5L9 1z"/><path d="M8 1v4h4v-1H9V1H8z"/></svg>
-        {t('new')}
-      </button>
-      <button className="tb-btn" onClick={saveProject}>
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2v12h12V4.5L11.5 2H2zm5 10a2 2 0 110-4 2 2 0 010 4zm3-7H3V3h7v2z"/></svg>
-        {t('save')} {isDirty && <span className="dirty-dot" />}
-      </button>
-      <button className="tb-btn" onClick={loadProject}>
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M1 3h5l2 2h7v9H1V3zm0 3v7h13V6H7.5L5.5 4H1v2z"/></svg>
-        {t('open')}
-      </button>
+      <img src={logoSvg} alt="BandWire" height={22} style={{flexShrink:0, marginRight:2}} draggable={false} />
 
       <div className="toolbar-sep" />
 
-      <button className="tb-btn" onClick={() => openModal('export')}>
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1v9m0 0L5 7m3 3l3-3M2 12v2h12v-2H2"/></svg>
-        {t('export')}
+      <button className="tb-btn" onClick={newProject} title="New project (Ctrl+N)">
+        <TbIcon name="app-new" /> {t('new')}
+      </button>
+      <button className="tb-btn" onClick={saveProject} title="Save (Ctrl+S)">
+        <TbIcon name="app-save" /> {t('save')} {isDirty && <span className="dirty-dot" />}
+      </button>
+      <button className="tb-btn" onClick={loadProject} title="Open (Ctrl+O)">
+        <TbIcon name="app-open" /> {t('open')}
+      </button>
+
+      <div className="toolbar-sep" />
+
+      <button className="tb-btn" onClick={() => openModal('export')} title="Export (Ctrl+E)">
+        <TbIcon name="app-export" /> {t('export')}
       </button>
 
       <div className="toolbar-sep" />
@@ -59,24 +89,8 @@ export default function Toolbar() {
           </span>
         ))}
         {sceneStack.length > 1 && (
-          <button className="tb-btn" onClick={exitScene} style={{marginLeft: 4}}>↩ {t('back')}</button>
+          <button className="tb-btn" onClick={exitScene} style={{marginLeft:4}}>↩ {t('back')}</button>
         )}
-      </div>
-
-      <div className="toolbar-sep" />
-
-      <div className="cable-selector">
-        <label>{t('cable')}:</label>
-        {Object.values(CABLE_GROUPS).flat().map(key => (
-          <button key={key}
-            className={'cable-chip' + (selectedCableType === key ? ' active' : '')}
-            style={{ color: CABLE_TYPES[key].color }}
-            onClick={() => setSelectedCableType(key)}
-            title={CABLE_TYPES[key].desc}
-          >
-            {CABLE_TYPES[key].label.split(' ')[0]}
-          </button>
-        ))}
       </div>
 
       <div className="toolbar-right">
@@ -84,13 +98,23 @@ export default function Toolbar() {
           {nodeCount} {t('nodes')} · {edgeCount} {t('edges')}
         </span>
         <div className="toolbar-sep" />
-        <button className="tb-btn" onClick={toggleTheme}>{theme === 'dark' ? '☀' : '🌙'}</button>
+        <button className="tb-btn" onClick={toggleTheme} title="Toggle theme">
+          <TbIcon name="app-theme" />
+        </button>
         <LangSelector />
-        <button className="tb-btn" onClick={() => openModal('manual')}>?</button>
+        <button className="tb-btn" onClick={() => openModal('settings')} title="Settings">
+          <TbIcon name="app-settings" />
+        </button>
+        <button className="tb-btn" onClick={() => openModal('manual')} title="Manual">
+          <TbIcon name="app-manual" />
+        </button>
         <div className="toolbar-sep" />
         <span style={{color:'var(--text-secondary)',fontSize:13,opacity:0.6}}>{APP_VERSION}</span>
         <div className="toolbar-sep" />
-        <span style={{color:'var(--text-secondary)',fontSize:14,maxWidth:160,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{projectName}</span>
+        <span style={{
+          color:'var(--text-secondary)',fontSize:14,
+          maxWidth:180,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'
+        }}>{projectName}</span>
       </div>
     </div>
   )

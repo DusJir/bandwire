@@ -101,6 +101,20 @@ ${canvasList.map(([action, desc]) => `  <li><strong>${action}:</strong> ${desc}<
 <p>${t('mIconLibraryText')}</p>
 <p>${t('mIconLibraryAD2')}</p>
 
+<h2>${t('mSettings')}</h2>
+<p>${t('mSettingsText')}</p>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
+  <thead><tr>
+    <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary)">${t('mShortcutAction')}</th>
+    <th style="text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary)">Effect</th>
+  </tr></thead>
+  <tbody>
+    ${(t('mSettingsList')||[]).map(([s,a])=>`<tr>
+      <td style="padding:5px 8px;border-bottom:1px solid var(--border);font-weight:600">${s}</td>
+      <td style="padding:5px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary)">${a}</td>
+    </tr>`).join('')}
+  </tbody>
+</table>
 <h2>${t('mProjects')}</h2>
 <p>${t('mProjectsText')}</p>
 </body>
