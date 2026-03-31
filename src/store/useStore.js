@@ -123,7 +123,7 @@ const useStore = create((set, get) => ({
     const s = get()
     if (platform.isBrowser()) {
       const { scenes, projectName, deviceLibrary } = s
-      platform.autoSave(JSON.stringify({ version: '0.5.1', projectName, scenes, deviceLibrary }, null, 2))
+      platform.autoSave(JSON.stringify({ version: '1.0', projectName, scenes, deviceLibrary }, null, 2))
     }
   },
 

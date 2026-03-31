@@ -6,6 +6,33 @@ import { CONNECTOR_TYPES } from '../../constants/connectorTypes'
 
 const NODE_COLORS = [null,'#6366f1','#3B82F6','#10B981','#F59E0B','#F97316','#EC4899','#EF4444']
 
+// ── Standalone PortList — must be outside PropertiesPanel to avoid remount on every render
+function PortList({ side, ports, addLabel, placeholder, onUpdate, onUpdateImmediate, onRemove, onAdd, onFlush }) {
+  return (
+    <div className="port-list">
+      {ports.map((p, i) => (
+        <div key={p.id} className="port-item port-item-full">
+          <input
+            value={p.label}
+            onChange={e => onUpdate(side, i, 'label', e.target.value)}
+            onBlur={() => onFlush(side)}
+            placeholder={placeholder + ' ' + (i + 1)}
+          />
+          <select
+            value={p.connector || 'XLR'}
+            onChange={e => onUpdateImmediate(side, i, 'connector', e.target.value)}
+            className="port-connector-select"
+          >
+            {CONNECTOR_TYPES.map(c => <option key={c}>{c}</option>)}
+          </select>
+          <button className="port-del-btn" onClick={() => onRemove(side, i)}>×</button>
+        </div>
+      ))}
+      <button className="add-port-btn" onClick={() => onAdd(side)}>{addLabel}</button>
+    </div>
+  )
+}
+
 export default function PropertiesPanel() {
   const { t } = useTranslation('t')
   const {
@@ -48,13 +75,13 @@ export default function PropertiesPanel() {
   const flush = (o = {}) => {
     if (!node) return
     updateNodeData(node.id, {
-      label:          o.label          !== undefined ? o.label          : label,
-      model:          o.model          !== undefined ? o.model          : model,
-      notes:          o.notes          !== undefined ? o.notes          : notes,
-      color:          o.color          !== undefined ? o.color          : color,
-      inputs:         o.inputs         !== undefined ? o.inputs         : inputs,
-      outputs:        o.outputs        !== undefined ? o.outputs        : outputs,
-      physicalDevice: o.physicalDevice !== undefined ? o.physicalDevice : physicalDevice,
+      label:          'label'          in o ? o.label          : label,
+      model:          'model'          in o ? o.model          : model,
+      notes:          'notes'          in o ? o.notes          : notes,
+      color:          'color'          in o ? o.color          : color,
+      inputs:         'inputs'         in o ? o.inputs         : inputs,
+      outputs:        'outputs'        in o ? o.outputs        : outputs,
+      physicalDevice: 'physicalDevice' in o ? o.physicalDevice : physicalDevice,
     })
   }
 
@@ -63,13 +90,19 @@ export default function PropertiesPanel() {
     if (side === 'in') { const n=[...inputs,p]; setInputs(n); flush({inputs:n}) }
     else               { const n=[...outputs,p]; setOutputs(n); flush({outputs:n}) }
   }
-  const updatePort = (side, idx, field, val) => {
+  const updatePort = (side, idx, field, val, immediate = false) => {
     if (side === 'in') {
-      const n = inputs.map((p,i)=>i===idx?{...p,[field]:val}:p); setInputs(n); flush({inputs:n})
+      const n = inputs.map((p,i)=>i===idx?{...p,[field]:val}:p)
+      setInputs(n)
+      if (immediate) flush({inputs:n})
     } else {
-      const n = outputs.map((p,i)=>i===idx?{...p,[field]:val}:p); setOutputs(n); flush({outputs:n})
+      const n = outputs.map((p,i)=>i===idx?{...p,[field]:val}:p)
+      setOutputs(n)
+      if (immediate) flush({outputs:n})
     }
   }
+  const flushSide = (side) => side === 'in' ? flush({inputs}) : flush({outputs})
+
   const removePort = (side, idx) => {
     if (side === 'in') { const n=inputs.filter((_,i)=>i!==idx); setInputs(n); flush({inputs:n}) }
     else               { const n=outputs.filter((_,i)=>i!==idx); setOutputs(n); flush({outputs:n}) }
@@ -86,8 +119,8 @@ export default function PropertiesPanel() {
   const flushEdge = (o = {}) => {
     if (!edge) return
     updateEdgeData(edge.id, { data: {
-      label:     o.label     !== undefined ? o.label     : edgeLabel,
-      cableType: o.cableType !== undefined ? o.cableType : edgeCable,
+      label:     'label'     in o ? o.label     : edgeLabel,
+      cableType: 'cableType' in o ? o.cableType : edgeCable,
     }})
   }
 
@@ -121,24 +154,6 @@ export default function PropertiesPanel() {
       onConfirm:    () => deleteCustomCableType(id),
     })
   }
-
-  // ── Port list helper ─────────────────────────────────────────
-  const PortList = ({ side, ports, addLabel, placeholder }) => (
-    <div className="port-list">
-      {ports.map((p,i) => (
-        <div key={p.id} className="port-item port-item-full">
-          <input value={p.label} onChange={e=>updatePort(side,i,'label',e.target.value)}
-            placeholder={placeholder + ' ' + (i+1)} />
-          <select value={p.connector||'XLR'} onChange={e=>updatePort(side,i,'connector',e.target.value)}
-            className="port-connector-select">
-            {CONNECTOR_TYPES.map(c=><option key={c}>{c}</option>)}
-          </select>
-          <button className="port-del-btn" onClick={()=>removePort(side,i)}>×</button>
-        </div>
-      ))}
-      <button className="add-port-btn" onClick={()=>addPort(side)}>{addLabel}</button>
-    </div>
-  )
 
   // ── Cable type panel (always shown at bottom) ─────────────────
   const CablePanel = () => (
@@ -197,14 +212,14 @@ export default function PropertiesPanel() {
         <>
           <div className="props-body">
             <div className="field"><label>{t('label')}</label>
-              <input value={label} onChange={e=>{setLabel(e.target.value);flush({label:e.target.value})}} />
+              <input value={label} onChange={e=>setLabel(e.target.value)} onBlur={()=>flush()} />
             </div>
             <div className="field"><label>{t('modelMake')}</label>
-              <input value={model} onChange={e=>{setModel(e.target.value);flush({model:e.target.value})}}
+              <input value={model} onChange={e=>setModel(e.target.value)} onBlur={()=>flush()}
                 placeholder={t('modelPlaceholder')} />
             </div>
             <div className="field"><label>{t('notes')}</label>
-              <textarea value={notes} onChange={e=>{setNotes(e.target.value);flush({notes:e.target.value})}}
+              <textarea value={notes} onChange={e=>setNotes(e.target.value)} onBlur={()=>flush()}
                 placeholder={t('notesPlaceholder')} />
             </div>
             <div className="field"><label>{t('colorAccent')}</label>
@@ -217,9 +232,13 @@ export default function PropertiesPanel() {
               </div>
             </div>
             <div className="field-section-title">{t('inputs')}</div>
-            <PortList side="in" ports={inputs} addLabel={t('addInput')} placeholder="In" />
+            <PortList side="in" ports={inputs} addLabel={t('addInput')} placeholder="In"
+              onUpdate={updatePort} onUpdateImmediate={(s,i,f,v)=>updatePort(s,i,f,v,true)}
+              onRemove={removePort} onAdd={addPort} onFlush={flushSide} />
             <div className="field-section-title">{t('outputs')}</div>
-            <PortList side="out" ports={outputs} addLabel={t('addOutput')} placeholder="Out" />
+            <PortList side="out" ports={outputs} addLabel={t('addOutput')} placeholder="Out"
+              onUpdate={updatePort} onUpdateImmediate={(s,i,f,v)=>updatePort(s,i,f,v,true)}
+              onRemove={removePort} onAdd={addPort} onFlush={flushSide} />
 
             {/* Delete custom device button with X badge logic */}
             {node.data?.source === 'custom' && (
@@ -251,10 +270,10 @@ export default function PropertiesPanel() {
         <>
           <div className="props-body">
             <div className="field"><label>{t('rackLabel')}</label>
-              <input value={label} onChange={e=>{setLabel(e.target.value);flush({label:e.target.value})}} />
+              <input value={label} onChange={e=>setLabel(e.target.value)} onBlur={()=>flush()} />
             </div>
             <div className="field"><label>{t('notes')}</label>
-              <textarea value={notes} onChange={e=>{setNotes(e.target.value);flush({notes:e.target.value})}}
+              <textarea value={notes} onChange={e=>setNotes(e.target.value)} onBlur={()=>flush()}
                 placeholder={t('rackNotesPlaceholder')} />
             </div>
             <div className="field"><label>{t('colorAccent')}</label>
@@ -275,7 +294,7 @@ export default function PropertiesPanel() {
               </label>
               <input
                 value={physicalDevice}
-                onChange={e=>{setPhysicalDevice(e.target.value);flush({physicalDevice:e.target.value})}}
+                onChange={e=>setPhysicalDevice(e.target.value)} onBlur={()=>flush()}
                 placeholder="e.g. Patch Bay, Stage Box, D-Sub..."
               />
               <div style={{fontSize:10,color:'var(--text-dim)',marginTop:4,lineHeight:1.5}}>
@@ -288,37 +307,17 @@ export default function PropertiesPanel() {
               {t('inputs')}
               <span style={{opacity:0.5,fontSize:10,marginLeft:6}}>— connectable in main scene</span>
             </div>
-            <div className="port-list">
-              {inputs.map((p,i) => (
-                <div key={p.id} className="port-item port-item-full">
-                  <input value={p.label} onChange={e=>updatePort('in',i,'label',e.target.value)} placeholder={'In '+(i+1)} />
-                  <select value={p.connector||'XLR'} onChange={e=>updatePort('in',i,'connector',e.target.value)}
-                    className="port-connector-select">
-                    {CONNECTOR_TYPES.map(c=><option key={c}>{c}</option>)}
-                  </select>
-                  <button className="port-del-btn" onClick={()=>removePort('in',i)}>×</button>
-                </div>
-              ))}
-              <button className="add-port-btn" onClick={()=>addPort('in')}>{t('addInput')}</button>
-            </div>
+            <PortList side="in" ports={inputs} addLabel={t('addInput')} placeholder="In"
+              onUpdate={updatePort} onUpdateImmediate={(s,i,f,v)=>updatePort(s,i,f,v,true)}
+              onRemove={removePort} onAdd={addPort} onFlush={flushSide} />
 
             <div className="field-section-title">
               {t('outputs')}
               <span style={{opacity:0.5,fontSize:10,marginLeft:6}}>— connectable in main scene</span>
             </div>
-            <div className="port-list">
-              {outputs.map((p,i) => (
-                <div key={p.id} className="port-item port-item-full">
-                  <input value={p.label} onChange={e=>updatePort('out',i,'label',e.target.value)} placeholder={'Out '+(i+1)} />
-                  <select value={p.connector||'XLR'} onChange={e=>updatePort('out',i,'connector',e.target.value)}
-                    className="port-connector-select">
-                    {CONNECTOR_TYPES.map(c=><option key={c}>{c}</option>)}
-                  </select>
-                  <button className="port-del-btn" onClick={()=>removePort('out',i)}>×</button>
-                </div>
-              ))}
-              <button className="add-port-btn" onClick={()=>addPort('out')}>{t('addOutput')}</button>
-            </div>
+            <PortList side="out" ports={outputs} addLabel={t('addOutput')} placeholder="Out"
+              onUpdate={updatePort} onUpdateImmediate={(s,i,f,v)=>updatePort(s,i,f,v,true)}
+              onRemove={removePort} onAdd={addPort} onFlush={flushSide} />
 
             <div className="props-hint" style={{marginTop:8}}>
               Define ports → double-click rack to open inner scene → gateways appear automatically.
@@ -336,7 +335,7 @@ export default function PropertiesPanel() {
           <div className="props-body">
             <div className="field"><label>{t('cableLabel')}</label>
               <input value={edgeLabel}
-                onChange={e=>{setEdgeLabel(e.target.value);flushEdge({label:e.target.value})}}
+                onChange={e=>setEdgeLabel(e.target.value)} onBlur={()=>flushEdge()}
                 placeholder={t('cableLabelPlaceholder')} />
             </div>
             <div className="field"><label>{t('cableType')}</label>

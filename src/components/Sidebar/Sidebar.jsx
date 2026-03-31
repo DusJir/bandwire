@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
 import { platform } from '../../platform'
-import { FACTORY_TAGS } from '../../constants/factoryTags'
 
 const RACK_ENTRY = {
   name: 'rack', src: null, isRack: true,
