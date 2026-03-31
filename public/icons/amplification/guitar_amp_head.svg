@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <rect x="2" y="20" width="60" height="24" style="fill:rgb(26,1,1);"/>
+    <clipPath id="_clip1">
+        <path d="M62.833,20L62.833,44C62.833,44.46 62.46,44.833 62,44.833L2,44.833C1.54,44.833 1.167,44.46 1.167,44L1.167,20C1.167,19.54 1.54,19.167 2,19.167L62,19.167C62.46,19.167 62.833,19.54 62.833,20ZM61.167,20.833L2.833,20.833L2.833,43.167L61.167,43.167L61.167,20.833Z"/>
+    </clipPath>
+    <g clip-path="url(#_clip1)">
+        <use xlink:href="#_Image2" x="1.167" y="19.167" width="62px" height="26px"/>
+    </g>
+    <circle cx="41.383" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="48.05" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="54.716" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="34.716" cy="26" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="30" y="22" width="30" height="8" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="4" y="22" width="24" height="20" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <path d="M16.479,33.4L16.479,31.876L21.982,31.867L21.982,36.688C21.137,37.361 20.266,37.868 19.368,38.208C18.47,38.547 17.549,38.717 16.603,38.717C15.327,38.717 14.168,38.444 13.125,37.897C12.082,37.351 11.295,36.561 10.763,35.527C10.232,34.493 9.966,33.338 9.966,32.062C9.966,30.798 10.23,29.618 10.759,28.522C11.288,27.426 12.048,26.612 13.041,26.08C14.033,25.549 15.177,25.283 16.47,25.283C17.41,25.283 18.259,25.435 19.018,25.739C19.777,26.044 20.372,26.467 20.804,27.011C21.235,27.554 21.563,28.263 21.787,29.138L20.237,29.563C20.042,28.901 19.799,28.382 19.51,28.003C19.22,27.625 18.807,27.323 18.269,27.095C17.732,26.868 17.135,26.754 16.479,26.754C15.693,26.754 15.014,26.874 14.441,27.113C13.868,27.352 13.406,27.667 13.054,28.057C12.703,28.446 12.429,28.875 12.234,29.342C11.904,30.145 11.738,31.016 11.738,31.956C11.738,33.114 11.938,34.082 12.336,34.862C12.735,35.642 13.316,36.221 14.078,36.599C14.84,36.977 15.649,37.166 16.506,37.166C17.25,37.166 17.977,37.023 18.686,36.737C19.395,36.45 19.932,36.144 20.299,35.819L20.299,33.4L16.479,33.4Z" style="fill:white;fill-rule:nonzero;"/>
+    <defs>
+        <image id="_Image2" width="62px" height="26px" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAAaCAYAAADv/O9kAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAOklEQVRYhe3PMQEAIAzAMMC/5yFjRxoF7Z2ZOaC3HbClcU3jmsY1jWsa1zSuaVzTuKZxTeOaxjWNaz5puQQwycmVzAAAAABJRU5ErkJggg=="/>
+    </defs>
+</svg>

@@ -8,6 +8,7 @@
   --bg-input:      #12121e;
   --border:        #252538;
   --border-active: #3a3a5c;
+  --bg-active: #313142;
   --text-primary:  #e0e0f0;
   --text-secondary:#7a7a9a;
   --text-dim:      #3a3a55;
@@ -16,6 +17,7 @@
   --accent-dim:    rgba(99,102,241,0.15);
   --danger:        #ef4444;
   --danger-hover:  #f87171;
+  --danger-dim: #780000;
   --success:       #22c55e;
   --toolbar-h:     48px;
   --sidebar-w:     260px;
@@ -51,10 +53,10 @@ body {
   gap: 4px;
   padding: 0 12px;
   flex-shrink: 0;
-  -webkit-app-region: drag;
+  --webkit-app-region: drag;
 }
 
-.toolbar > * { -webkit-app-region: no-drag; }
+.toolbar > * { --webkit-app-region: no-drag; }
 
 .toolbar-sep {
   width: 1px;
@@ -520,6 +522,7 @@ body {
   --bg-surface:    #ffffff;
   --bg-hover:      #ededf8;
   --bg-input:      #f8f8ff;
+  --bg-active:      #cacafb;
   --border:        #d0d0e0;
   --border-active: #a0a0c8;
   --text-primary:  #1a1a2e;

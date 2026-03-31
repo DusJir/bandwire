@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <rect x="2" y="2" width="60" height="60" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <g>
+        <rect x="5" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="5" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="5" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="5" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="7" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="54" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="54" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="56" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="56" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="56" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="56" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="56" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="56" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="56" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="47" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="47" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="49" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="49" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="49" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="49" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="49" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="49" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="49" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="40" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="40" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="42" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="42" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="42" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="42" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="42" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="42" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="42" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="33" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="33" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="35" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="35" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="35" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="35" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="35" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="35" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="35" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="26" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="26" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="28" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="28" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="28" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="28" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="28" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="28" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="28" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="19" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="19" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="21" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="21" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="21" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="21" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="21" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="21" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="21" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <g>
+        <rect x="12" y="4" width="4" height="22" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <rect x="12" y="28" width="4" height="9" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="14" cy="7" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="14" cy="11" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="14" cy="15" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="14" cy="30.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="14" cy="34.5" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="14" cy="19" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="14" cy="23" r="1" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    </g>
+    <rect x="48" y="47" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="48" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="55" y="43.5" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="55" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="41" y="49.5" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="41" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="34" y="43.5" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="34" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="27" y="51" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="27" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="20" y="43" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="20" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="13" y="45.5" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="13" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <rect x="6" y="41" width="2" height="4" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <rect x="6" y="39" width="2" height="21" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+</svg>

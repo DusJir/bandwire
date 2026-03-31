@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <rect x="2" y="2" width="60" height="60" style="fill:rgb(26,1,1);"/>
+    <clipPath id="_clip1">
+        <path d="M62.833,2L62.833,62C62.833,62.46 62.46,62.833 62,62.833L2,62.833C1.54,62.833 1.167,62.46 1.167,62L1.167,2C1.167,1.54 1.54,1.167 2,1.167L62,1.167C62.46,1.167 62.833,1.54 62.833,2ZM61.167,2.833L2.833,2.833L2.833,61.167L61.167,61.167L61.167,2.833Z"/>
+    </clipPath>
+    <g clip-path="url(#_clip1)">
+        <use xlink:href="#_Image2" x="1.167" y="1.167" width="62px" height="62px"/>
+    </g>
+    <path d="M17.5,33.5C24.399,33.5 30,39.101 30,46C30,52.899 24.399,58.5 17.5,58.5C10.601,58.5 5,52.899 5,46C5,39.101 10.601,33.5 17.5,33.5ZM17.5,38C13.085,38 9.5,41.585 9.5,46C9.5,50.415 13.085,54 17.5,54C21.915,54 25.5,50.415 25.5,46C25.5,41.585 21.915,38 17.5,38Z" style="fill:rgb(26,1,1);"/>
+    <circle cx="17.5" cy="46" r="8" style="fill:rgb(26,1,1);"/>
+    <path d="M17.5,5.5C24.399,5.5 30,11.101 30,18C30,24.899 24.399,30.5 17.5,30.5C10.601,30.5 5,24.899 5,18C5,11.101 10.601,5.5 17.5,5.5ZM17.5,10C13.085,10 9.5,13.585 9.5,18C9.5,22.415 13.085,26 17.5,26C21.915,26 25.5,22.415 25.5,18C25.5,13.585 21.915,10 17.5,10Z" style="fill:rgb(26,1,1);"/>
+    <circle cx="17.5" cy="18" r="8" style="fill:rgb(26,1,1);"/>
+    <path d="M46.5,5.5C53.399,5.5 59,11.101 59,18C59,24.899 53.399,30.5 46.5,30.5C39.601,30.5 34,24.899 34,18C34,11.101 39.601,5.5 46.5,5.5ZM46.5,10C42.085,10 38.5,13.585 38.5,18C38.5,22.415 42.085,26 46.5,26C50.915,26 54.5,22.415 54.5,18C54.5,13.585 50.915,10 46.5,10Z" style="fill:rgb(26,1,1);"/>
+    <circle cx="46.5" cy="18" r="8" style="fill:rgb(26,1,1);"/>
+    <path d="M46.5,33.5C53.399,33.5 59,39.101 59,46C59,52.899 53.399,58.5 46.5,58.5C39.601,58.5 34,52.899 34,46C34,39.101 39.601,33.5 46.5,33.5ZM46.5,38C42.085,38 38.5,41.585 38.5,46C38.5,50.415 42.085,54 46.5,54C50.915,54 54.5,50.415 54.5,46C54.5,41.585 50.915,38 46.5,38Z" style="fill:rgb(26,1,1);"/>
+    <circle cx="46.5" cy="46" r="8" style="fill:rgb(26,1,1);"/>
+    <g>
+        <circle cx="17.5" cy="38" r="8" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="17.5" cy="38" r="12.5" style="fill:none;stroke:white;stroke-width:3.33px;"/>
+    </g>
+    <circle cx="41.383" cy="8" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="48.05" cy="8" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="54.716" cy="8" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="14.716" cy="8" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="21.383" cy="8" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="28.05" cy="8" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <circle cx="34.716" cy="8" r="2" style="fill:white;stroke:white;stroke-width:0.83px;"/>
+    <g>
+        <circle cx="46.5" cy="38" r="8" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+        <circle cx="46.5" cy="38" r="12.5" style="fill:none;stroke:white;stroke-width:3.33px;"/>
+    </g>
+    <rect x="10" y="4" width="50" height="8" style="fill:none;stroke:white;stroke-width:0.83px;"/>
+    <defs>
+        <image id="_Image2" width="62px" height="62px" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAA+CAYAAABzwahEAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAYElEQVRoge3PMQEAIAzAMMC/5yFjRxoF7Z2ZOaC3HbClcU3jmsY1jWsa1zSuaVzTuKZxTeOaxjWNaxrXNK5pXNO4pnFN45rGNY1rGtc0rmlc07imcU3jmsY1jWsa1zSu+SL1BHhjOR79AAAAAElFTkSuQmCC"/>
+    </defs>
+</svg>

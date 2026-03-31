@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
 import { platform } from '../../platform'
 
-const RACK_ENTRY = {
+/*const RACK_ENTRY = {
   name: 'rack', src: null, isRack: true,
   tags: ['utility'], source: 'factory', label: 'Rack',
-}
+}*/
 
 export default function Sidebar() {
   const { t } = useTranslation('t')
@@ -55,9 +55,9 @@ export default function Sidebar() {
     return allItems.filter(item => {
       if (isInRack && !item.tags?.includes('rack')) return false
       if (activeTag && !item.tags?.includes(activeTag)) return false
-      if (q && !item.label?.toLowerCase().includes(q) &&
-               !item.tags?.join(' ').toLowerCase().includes(q)) return false
-      return true
+      return !(q && !item.label?.toLowerCase().includes(q) &&
+          !item.tags?.join(' ').toLowerCase().includes(q));
+
     })
   }, [allItems, search, activeTag, isInRack])
 

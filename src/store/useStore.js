@@ -33,7 +33,6 @@ const useStore = create((set, get) => ({
     const state   = get()
 
     // Find rack node data to get its defined ports
-    const mainScene = state.scenes.main
     let rackNode = null
     for (const scene of Object.values(state.scenes)) {
       const found = scene?.nodes?.find(n => n.id === rackNodeId)
