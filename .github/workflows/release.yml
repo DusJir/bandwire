@@ -12,9 +12,9 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -22,6 +22,7 @@ jobs:
         run: npm ci
 
       - name: Create icons directories
+        shell: bash
         run: |
           mkdir -p public/icons
           mkdir -p public/app-icons
@@ -32,7 +33,7 @@ jobs:
         run: npm run package:win
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-build
           path: |
@@ -42,9 +43,9 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -52,6 +53,7 @@ jobs:
         run: npm ci
 
       - name: Create icons directories
+        shell: bash
         run: |
           mkdir -p public/icons
           mkdir -p public/app-icons
@@ -62,7 +64,7 @@ jobs:
         run: npm run package:linux
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: linux-build
           path: |
@@ -74,16 +76,16 @@ jobs:
     needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download Windows build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: windows-build
           path: release/
 
       - name: Download Linux build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: linux-build
           path: release/
