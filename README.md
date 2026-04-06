@@ -40,13 +40,13 @@ Rack nodes are containers with their own internal canvas. The workflow:
 
 ### Requirements
 
-- Node.js 18+
+- Node.js 20+
 - npm 9+
 
 ### Install & run
 
 ```bash
-git clone https://github.com/your-username/bandwire.git
+git clone https://github.com/DusJir/bandwire.git
 cd bandwire
 npm install
 npm run dev          # Electron dev mode
@@ -119,8 +119,8 @@ electron/
 
 ## Roadmap
 
-- [ ] Stage plot module (separate canvas mode for stage layouts)
-- [ ] Technical rider generator
+- [X] Stage plot module (separate canvas mode for stage layouts)
+- [X] Technical rider generator
 - [ ] Venue / contact catalog
 - [ ] Mac build (requires Apple Developer Account)
 - [ ] PDF export

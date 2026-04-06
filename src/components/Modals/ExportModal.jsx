@@ -198,8 +198,8 @@ export default function ExportModal() {
   const busy = exporting !== null
 
   return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div className="modal modal-sm" onClick={e => e.stopPropagation()}>
+    <div className="modal-backdrop" onMouseDown={closeModal}>
+      <div className="modal modal-sm" onMouseDown={e => e.stopPropagation()}>
         <div className="modal-header">
           <span>{t('exportDiagram')}</span>
           <button className="modal-close" onClick={closeModal}>×</button>

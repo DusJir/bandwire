@@ -8,7 +8,6 @@
   --bg-input:      #12121e;
   --border:        #252538;
   --border-active: #3a3a5c;
-  --bg-active: #313142;
   --text-primary:  #e0e0f0;
   --text-secondary:#7a7a9a;
   --text-dim:      #3a3a55;
@@ -17,11 +16,11 @@
   --accent-dim:    rgba(99,102,241,0.15);
   --danger:        #ef4444;
   --danger-hover:  #f87171;
-  --danger-dim: #780000;
   --success:       #22c55e;
   --toolbar-h:     48px;
   --sidebar-w:     260px;
   --props-w:       280px;
+  --bg-node:       #1e1e30;
 }
 
 body {
@@ -53,10 +52,10 @@ body {
   gap: 4px;
   padding: 0 12px;
   flex-shrink: 0;
-  --webkit-app-region: drag;
+  -webkit-app-region: drag;
 }
 
-.toolbar > * { --webkit-app-region: no-drag; }
+.toolbar > * { -webkit-app-region: no-drag; }
 
 .toolbar-sep {
   width: 1px;
@@ -522,13 +521,13 @@ body {
   --bg-surface:    #ffffff;
   --bg-hover:      #ededf8;
   --bg-input:      #f8f8ff;
-  --bg-active:      #cacafb;
   --border:        #d0d0e0;
   --border-active: #a0a0c8;
   --text-primary:  #1a1a2e;
   --text-secondary:#4a4a6a;
   --text-dim:      #a0a0b8;
   --accent-dim:    rgba(99,102,241,0.12);
+  --bg-node:       #ffffff;
 }
 [data-theme="light"] .react-flow__background { background: var(--bg-deep) !important; }
 [data-theme="light"] .hw-node { background: #fff; }
@@ -1090,3 +1089,123 @@ body {
   line-height: 1;
 }
 .update-toast-dismiss:hover { color: var(--text-primary); }
+
+/* ── Mode switcher ─────────────────────────────────────────────── */
+.mode-switcher {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 2px;
+}
+.mode-btn {
+  background: none;
+  border: none;
+  border-radius: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.mode-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
+.mode-btn.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* ── Stage Node ────────────────────────────────────────────────── */
+.stage-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 12px 8px;
+  min-width: 72px;
+  background: var(--bg-node);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: default;
+  user-select: none;
+}
+.stage-node.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
+}
+.stage-node-icon { display: flex; align-items: center; justify-content: center; }
+.stage-node-icon img { filter: invert(0.8); }
+.stage-node-label {
+  font-size: 10px;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stage-node-badge {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ── Stage Outline ─────────────────────────────────────────────── */
+.stage-outline {
+  position: relative;
+  border: 2px dashed var(--border-active);
+  border-radius: 8px;
+  background: transparent;
+  pointer-events: none;
+  cursor: default;
+}
+.stage-outline-label {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+.stage-outline-foh {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Stage Rider panel ─────────────────────────────────────────── */
+.stage-rider-panel {
+  border-top: 2px solid var(--border);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Stage background node — non-interactive, always behind devices ── */
+.react-flow__node-stageBackground {
+  pointer-events: none !important;
+  cursor: default !important;
+}

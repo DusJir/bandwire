@@ -10,8 +10,8 @@ export default function ConfirmModal() {
   }
 
   return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div className="modal modal-sm" onClick={e => e.stopPropagation()} style={{maxWidth:380}}>
+    <div className="modal-backdrop" onMouseDown={closeModal}>
+      <div className="modal modal-sm" onMouseDown={e => e.stopPropagation()} style={{maxWidth:380}}>
         <div className="modal-header">
           <span>{title || 'Confirm'}</span>
           <button className="modal-close" onClick={closeModal}>×</button>

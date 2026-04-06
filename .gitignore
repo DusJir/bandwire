@@ -5,7 +5,6 @@ node_modules/
 dist/
 dist-pwa/
 release/
-ICONS/
 
 # Environment
 .env
@@ -35,3 +34,5 @@ desktop.ini
 !public/icons/**
 !public/app-icons/**
 !src/assets/**
+
+ICONS/**

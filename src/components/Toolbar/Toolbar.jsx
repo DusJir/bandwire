@@ -17,6 +17,10 @@ import themeInvSvg    from '../../assets/app-icons/app-theme-inv.svg'
 import settingsSvg    from '../../assets/app-icons/app-settings.svg'
 import settingsInvSvg from '../../assets/app-icons/app-settings-inv.svg'
 import manualSvg      from '../../assets/app-icons/app-manual.svg'
+import schemaSvg      from '../../assets/app-icons/app-schema.svg'
+import schemaInvSvg   from '../../assets/app-icons/app-schem-inv.svg'
+import stageSvg       from '../../assets/app-icons/app-stage.svg'
+import stageInvSvg    from '../../assets/app-icons/app-stage-inv.svg'
 import manualInvSvg   from '../../assets/app-icons/app-manual-inv.svg'
 
 const ICONS = {
@@ -27,6 +31,8 @@ const ICONS = {
   'app-theme':    [themeSvg,    themeInvSvg],
   'app-settings': [settingsSvg, settingsInvSvg],
   'app-manual':   [manualSvg,   manualInvSvg],
+  'app-schema':   [schemaSvg,   schemaInvSvg],
+  'app-stage':    [stageSvg,    stageInvSvg],
 }
 
 function TbIcon({ name, size = 16 }) {
@@ -41,7 +47,7 @@ function TbIcon({ name, size = 16 }) {
 export default function Toolbar() {
   const { t } = useTranslation('t')
   const {
-    projectName, isDirty, theme,
+    projectName, isDirty, theme, appMode, setAppMode,
     saveProject, loadProject, newProject,
     toggleTheme, openModal,
     sceneStack, scenes, navigateToScene, exitScene,
@@ -72,13 +78,33 @@ export default function Toolbar() {
 
       <div className="toolbar-sep" />
 
-      <button className="tb-btn" onClick={() => openModal('export')} title="Export (Ctrl+E)">
+      <button className="tb-btn"
+        onClick={() => openModal(appMode === 'stage' ? 'stageExport' : 'export')}
+        title="Export (Ctrl+E)"
+      >
         <TbIcon name="app-export" /> {t('export')}
       </button>
 
       <div className="toolbar-sep" />
 
-      <div className="breadcrumb">
+      {/* Mode switcher */}
+      <div className="mode-switcher">
+        <button
+          className={'mode-btn' + (appMode === 'schema' ? ' active' : '')}
+          onClick={() => setAppMode('schema')}
+          title="Signal flow diagram"
+        ><TbIcon name="app-schema" /> Schema</button>
+        <button
+          className={'mode-btn' + (appMode === 'stage' ? ' active' : '')}
+          onClick={() => setAppMode('stage')}
+          title="Stage plot"
+        ><TbIcon name="app-stage" /> Stage</button>
+      </div>
+
+      <div className="toolbar-sep" />
+
+      {/* Breadcrumb — only in schema mode */}
+      {appMode === 'schema' && <div className="breadcrumb">
         {crumbs.map((c, i) => (
           <span key={c.id}>
             {i > 0 && <span className="breadcrumb-sep">›</span>}
@@ -91,7 +117,7 @@ export default function Toolbar() {
         {sceneStack.length > 1 && (
           <button className="tb-btn" onClick={exitScene} style={{marginLeft:4}}>↩ {t('back')}</button>
         )}
-      </div>
+      </div>}
 
       <div className="toolbar-right">
         <span style={{color:'var(--text-dim)',fontSize:13}}>
