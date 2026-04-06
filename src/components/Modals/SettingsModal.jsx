@@ -1,148 +1,327 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
+
+const NAV = [
+  { id: 'appearance', label: '🎨 Appearance' },
+  { id: 'language',   label: '🌐 Language'   },
+  { id: 'cables',     label: '🔌 Cables'     },
+  { id: 'stage',      label: '🎸 Stage'      },
+  { id: 'exports',    label: '📤 Exports'    },
+  { id: 'shortcuts',  label: '⌨️ Shortcuts'  },
+]
+
+const LANGUAGES = [
+  { code: 'en', label: 'English'  },
+  { code: 'cs', label: 'Čeština' },
+  { code: 'de', label: 'Deutsch'  },
+  { code: 'fr', label: 'Français' },
+  { code: 'es', label: 'Español'  },
+  { code: 'it', label: 'Italiano' },
+  { code: 'ru', label: 'Русский'  },
+]
+
+const SHORTCUTS = [
+  ['Ctrl+S',           'Save project'],
+  ['Ctrl+O',           'Open project'],
+  ['Ctrl+N',           'New project'],
+  ['Ctrl+E',           'Export'],
+  ['Delete/Backspace', 'Delete selected'],
+  ['Escape',           'Close modal / deselect'],
+]
+
+const COMPASS = ['N','NE','E','SE','S','SW','W','NW']
+
+function RadioGroup({ options, value, onChange }) {
+  return (
+    <div style={{display:'flex',flexDirection:'column',gap:8}}>
+      {options.map(o => (
+        <label key={o.value} style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+          <div style={{
+            width:16, height:16, borderRadius:'50%', flexShrink:0,
+            border: `2px solid ${value===o.value ? 'var(--accent)' : 'var(--border-active)'}`,
+            background: value===o.value ? 'var(--accent)' : 'transparent',
+            display:'flex',alignItems:'center',justifyContent:'center',
+          }} onClick={() => onChange(o.value)}>
+            {value===o.value && <div style={{width:6,height:6,borderRadius:'50%',background:'white'}}/>}
+          </div>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>{o.label}</div>
+            {o.hint && <div style={{fontSize:11,color:'var(--text-secondary)'}}>{o.hint}</div>}
+          </div>
+        </label>
+      ))}
+    </div>
+  )
+}
+
+function ColorPicker({ value, onChange, label }) {
+  return (
+    <div>
+      <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:6}}>{label}</div>
+      <div style={{display:'flex',gap:10,alignItems:'center'}}>
+        <input type="color" value={value}
+          onChange={e => onChange(e.target.value)}
+          style={{width:36,height:36,padding:0,border:'1px solid var(--border)',borderRadius:8,cursor:'pointer'}}
+        />
+        <span style={{fontSize:11,fontFamily:'monospace',color:'var(--text-secondary)'}}>{value}</span>
+      </div>
+    </div>
+  )
+}
+
+function Section({ title, children }) {
+  return (
+    <div style={{marginBottom:20}}>
+      <div style={{fontSize:11,fontWeight:700,textTransform:'uppercase',letterSpacing:'1px',
+        color:'var(--text-secondary)',marginBottom:12,paddingBottom:6,
+        borderBottom:'1px solid var(--border)'}}>{title}</div>
+      {children}
+    </div>
+  )
+}
 
 export default function SettingsModal() {
   const { t, i18n } = useTranslation('t')
   const { closeModal, settings, updateSettings, theme, toggleTheme } = useStore()
+  const [activeTab, setActiveTab] = useState('appearance')
 
-  const LANGUAGES = [
-    { code: 'en', label: 'English' },
-    { code: 'cs', label: 'Čeština' },
-    { code: 'de', label: 'Deutsch' },
-    { code: 'fr', label: 'Français' },
-    { code: 'es', label: 'Español' },
-    { code: 'it', label: 'Italiano' },
-    { code: 'ru', label: 'Русский' },
-  ]
+  const renderContent = () => {
+    switch(activeTab) {
 
-  const Toggle = ({ value, onChange, label, hint }) => (
-    <label style={{display:'flex',alignItems:'flex-start',gap:12,padding:'10px 0',
-      borderBottom:'1px solid var(--border)',cursor:'pointer'}}>
-      <div style={{position:'relative',width:36,height:20,flexShrink:0,marginTop:2}}>
-        <input type="checkbox" checked={value} onChange={e=>onChange(e.target.checked)}
-          style={{opacity:0,width:0,height:0,position:'absolute'}} />
-        <div style={{
-          position:'absolute',top:0,left:0,right:0,bottom:0,
-          borderRadius:10,
-          background: value ? 'var(--accent)' : 'var(--bg-input)',
-          border:'1px solid var(--border-active)',
-          transition:'background 0.15s'
-        }}>
-          <div style={{
-            position:'absolute',top:2,left: value ? 18 : 2,
-            width:14,height:14,borderRadius:'50%',
-            background:'white',transition:'left 0.15s'
-          }}/>
+      case 'appearance': return (
+        <div>
+          <Section title="Theme">
+            <RadioGroup
+              value={theme}
+              onChange={v => { if (v !== theme) toggleTheme() }}
+              options={[
+                { value: 'light', label: 'Light', hint: 'Default — bright interface' },
+                { value: 'dark',  label: 'Dark',  hint: 'Easy on the eyes in low-light conditions' },
+              ]}
+            />
+          </Section>
         </div>
-      </div>
-      <div>
-        <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>{label}</div>
-        {hint && <div style={{fontSize:11,color:'var(--text-secondary)',marginTop:2}}>{hint}</div>}
-      </div>
-    </label>
-  )
+      )
 
-  return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div className="modal modal-sm" onClick={e=>e.stopPropagation()} style={{maxWidth:460}}>
-        <div className="modal-header">
-          <span>⚙ Settings</span>
-          <button className="modal-close" onClick={closeModal}>×</button>
-        </div>
-        <div className="modal-body" style={{padding:'8px 24px 16px'}}>
-
-          {/* Appearance */}
-          <div className="field-section-title" style={{marginTop:8}}>Appearance</div>
-          <label style={{display:'flex',alignItems:'center',gap:12,padding:'10px 0',
-            borderBottom:'1px solid var(--border)',cursor:'pointer'}}>
-            <div style={{position:'relative',width:36,height:20,flexShrink:0}}>
-              <input type="checkbox" checked={theme==='dark'} onChange={toggleTheme}
-                style={{opacity:0,width:0,height:0,position:'absolute'}} />
-              <div style={{
-                position:'absolute',top:0,left:0,right:0,bottom:0,borderRadius:10,
-                background:theme==='dark'?'var(--accent)':'var(--bg-input)',
-                border:'1px solid var(--border-active)',transition:'background 0.15s'
-              }}>
-                <div style={{
-                  position:'absolute',top:2,left:theme==='dark'?18:2,
-                  width:14,height:14,borderRadius:'50%',
-                  background:'white',transition:'left 0.15s'
-                }}/>
-              </div>
-            </div>
-            <div>
-              <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Dark mode</div>
-            </div>
-          </label>
-
-          {/* Language */}
-          <div className="field-section-title" style={{marginTop:14}}>Language</div>
-          <div style={{display:'flex',flexWrap:'wrap',gap:6,padding:'8px 0',
-            borderBottom:'1px solid var(--border)'}}>
-            {LANGUAGES.map(l => (
-              <button key={l.code}
-                className={'tag-chip' + (i18n.language===l.code?' active':'')}
-                onClick={() => i18n.changeLanguage(l.code)}
-                style={{fontSize:12}}
-              >{l.label}</button>
-            ))}
-          </div>
-
-          {/* Cable compatibility */}
-          <div className="field-section-title" style={{marginTop:14}}>Cable Compatibility</div>
-          <Toggle
-            value={settings.enforceConnectorTypes}
-            onChange={v => updateSettings({ enforceConnectorTypes: v })}
-            label="Warn on connector mismatch"
-            hint="Show a warning when cable type doesn't match port connector type"
-          />
-
-          {/* Keyboard shortcuts */}
-          <div className="field-section-title" style={{marginTop:14}}>Keyboard Shortcuts</div>
-          <div style={{padding:'8px 0 4px',borderBottom:'1px solid var(--border)'}}>
-            {[
-              ['Ctrl+S', 'Save project'],
-              ['Ctrl+O', 'Open project'],
-              ['Ctrl+N', 'New project'],
-              ['Ctrl+E', 'Export'],
-              ['Delete / Backspace', 'Delete selected node or cable'],
-              ['Escape', 'Close modal / deselect'],
-            ].map(([key, action]) => (
-              <div key={key} style={{display:'flex',justifyContent:'space-between',
-                alignItems:'center',padding:'4px 0',fontSize:12}}>
-                <span style={{color:'var(--text-secondary)'}}>{action}</span>
-                <code style={{background:'var(--bg-input)',border:'1px solid var(--border)',
-                  borderRadius:4,padding:'1px 7px',fontSize:11,color:'var(--text-primary)'}}>{key}</code>
-              </div>
-            ))}
-          </div>
-
-          {/* Export defaults */}
-          <div className="field-section-title" style={{marginTop:14}}>Export Defaults</div>
-          <div style={{padding:'8px 0',borderBottom:'1px solid var(--border)'}}>
-            <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)',marginBottom:8}}>Default format</div>
-            <div style={{display:'flex',gap:8}}>
-              {['html','png'].map(fmt => (
-                <button key={fmt}
-                  className={'props-btn' + (settings.defaultExportFormat===fmt?' accent':'')}
-                  onClick={() => updateSettings({ defaultExportFormat: fmt })}
-                  style={{flex:1,textTransform:'uppercase',fontSize:11,letterSpacing:1}}
-                >{fmt}</button>
+      case 'language': return (
+        <div>
+          <Section title="Interface Language">
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              {LANGUAGES.map(l => (
+                <label key={l.code} style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+                  <div style={{
+                    width:16,height:16,borderRadius:'50%',flexShrink:0,
+                    border:`2px solid ${i18n.language===l.code?'var(--accent)':'var(--border-active)'}`,
+                    background:i18n.language===l.code?'var(--accent)':'transparent',
+                    display:'flex',alignItems:'center',justifyContent:'center',
+                  }} onClick={() => i18n.changeLanguage(l.code)}>
+                    {i18n.language===l.code && <div style={{width:6,height:6,borderRadius:'50%',background:'white'}}/>}
+                  </div>
+                  <span style={{fontSize:13,color:'var(--text-primary)'}}>{l.label}</span>
+                </label>
               ))}
             </div>
-          </div>
-          <Toggle
-            value={settings.defaultExportLegend}
-            onChange={v => updateSettings({ defaultExportLegend: v })}
-            label="Include signal legend by default"
-          />
-          <Toggle
-            value={settings.defaultExportColor}
-            onChange={v => updateSettings({ defaultExportColor: v })}
-            label="Color export by default"
-            hint="Uncheck for black & white"
-          />
+          </Section>
         </div>
+      )
+
+      case 'cables': return (
+        <div>
+          <Section title="Connector Compatibility">
+            <RadioGroup
+              value={settings.enforceConnectorTypes ? 'yes' : 'no'}
+              onChange={v => updateSettings({ enforceConnectorTypes: v === 'yes' })}
+              options={[
+                { value: 'yes', label: 'Warn on connector mismatch', hint: 'Show a warning when cable type doesn\'t match port connector type' },
+                { value: 'no',  label: 'Allow all connections', hint: 'No warnings — connect any cable to any port' },
+              ]}
+            />
+          </Section>
+        </div>
+      )
+
+      case 'stage': return (
+        <div>
+          <Section title="Default Colors">
+            <div style={{display:'flex',gap:24}}>
+              <ColorPicker label="H (House/FOH) color"
+                value={settings.stageFohColor || '#EF4444'}
+                onChange={v => updateSettings({ stageFohColor: v })}
+              />
+              <ColorPicker label="P (Personal/Band) color"
+                value={settings.stagePersonalColor || '#6366f1'}
+                onChange={v => updateSettings({ stagePersonalColor: v })}
+              />
+            </div>
+          </Section>
+
+          <Section title="Default Stage Setup">
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:8}}>
+                Number of stages
+              </div>
+              <div style={{display:'flex',gap:5}}>
+                {[1,2,3,4,5,6,7,8].map(n => (
+                  <button key={n}
+                    className={'props-btn' + ((settings.defaultStageCount||1)===n?' accent':'')}
+                    style={{flex:1,padding:'5px 0',fontSize:12}}
+                    onClick={() => updateSettings({ defaultStageCount: n })}
+                  >{n}</button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:8}}>
+                Default audience direction
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:5}}>
+                {COMPASS.map(d => (
+                  <button key={d}
+                    className={'props-btn' + (settings.defaultStageFohDirection===d?' accent':'')}
+                    style={{padding:'5px 0',fontSize:12}}
+                    onClick={() => updateSettings({ defaultStageFohDirection: d })}
+                  >{d}</button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{display:'flex',gap:12}}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:6}}>Default width (px)</div>
+                <input type="number" min={200} max={2000} step={50}
+                  value={settings.defaultStageWidth || 600}
+                  onChange={e => updateSettings({ defaultStageWidth: parseInt(e.target.value)||600 })}
+                  style={{width:'100%'}}
+                />
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:6}}>Default height (px)</div>
+                <input type="number" min={150} max={2000} step={50}
+                  value={settings.defaultStageHeight || 400}
+                  onChange={e => updateSettings({ defaultStageHeight: parseInt(e.target.value)||400 })}
+                  style={{width:'100%'}}
+                />
+              </div>
+            </div>
+          </Section>
+        </div>
+      )
+
+      case 'exports': return (
+        <div>
+          <Section title="Schema Export">
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:8}}>Default format</div>
+              <RadioGroup
+                value={settings.defaultExportFormat || 'html'}
+                onChange={v => updateSettings({ defaultExportFormat: v })}
+                options={[
+                  { value: 'html', label: 'HTML', hint: 'Interactive, best for sharing and viewing in browser' },
+                  { value: 'png',  label: 'PNG',  hint: 'Flat image, good for printing and embedding' },
+                ]}
+              />
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:10,marginTop:14}}>
+              <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+                <div style={{
+                  width:16,height:16,borderRadius:3,flexShrink:0,
+                  border:`2px solid ${settings.defaultExportLegend?'var(--accent)':'var(--border-active)'}`,
+                  background:settings.defaultExportLegend?'var(--accent)':'transparent',
+                  display:'flex',alignItems:'center',justifyContent:'center',
+                }} onClick={() => updateSettings({ defaultExportLegend: !settings.defaultExportLegend })}>
+                  {settings.defaultExportLegend && <span style={{color:'white',fontSize:10,fontWeight:700}}>✓</span>}
+                </div>
+                <div>
+                  <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Include signal legend</div>
+                  <div style={{fontSize:11,color:'var(--text-secondary)'}}>Show cable type legend in export</div>
+                </div>
+              </label>
+              <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+                <div style={{
+                  width:16,height:16,borderRadius:3,flexShrink:0,
+                  border:`2px solid ${settings.defaultExportColor?'var(--accent)':'var(--border-active)'}`,
+                  background:settings.defaultExportColor?'var(--accent)':'transparent',
+                  display:'flex',alignItems:'center',justifyContent:'center',
+                }} onClick={() => updateSettings({ defaultExportColor: !settings.defaultExportColor })}>
+                  {settings.defaultExportColor && <span style={{color:'white',fontSize:10,fontWeight:700}}>✓</span>}
+                </div>
+                <div>
+                  <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Color export</div>
+                  <div style={{fontSize:11,color:'var(--text-secondary)'}}>Uncheck for black & white</div>
+                </div>
+              </label>
+            </div>
+          </Section>
+
+          <Section title="Stage Plan Export">
+            <div style={{fontSize:12,color:'var(--text-secondary)'}}>
+              Stage plan exports follow the format selected in the export dialog. Use the Stage Export button (🎸 → Export) for detailed options including engineer, band, and rider views.
+            </div>
+          </Section>
+        </div>
+      )
+
+      case 'shortcuts': return (
+        <div>
+          <Section title="Keyboard Shortcuts">
+            <div style={{display:'flex',flexDirection:'column',gap:6}}>
+              {SHORTCUTS.map(([key, action]) => (
+                <div key={key} style={{display:'flex',justifyContent:'space-between',
+                  alignItems:'center',padding:'6px 0',borderBottom:'1px solid var(--border)',fontSize:12}}>
+                  <span style={{color:'var(--text-secondary)'}}>{action}</span>
+                  <code style={{background:'var(--bg-input)',border:'1px solid var(--border)',
+                    borderRadius:4,padding:'2px 8px',fontSize:11,color:'var(--text-primary)',whiteSpace:'nowrap'}}>{key}</code>
+                </div>
+              ))}
+            </div>
+          </Section>
+        </div>
+      )
+
+      default: return null
+    }
+  }
+
+  return (
+    <div className="modal-backdrop" onMouseDown={closeModal}>
+      <div className="modal" onMouseDown={e => e.stopPropagation()}
+        style={{width:680, height:520, display:'flex', flexDirection:'column'}}>
+
+        <div className="modal-header">
+          <span>Settings</span>
+          <button className="modal-close" onClick={closeModal}>×</button>
+        </div>
+
+        <div style={{display:'flex', flex:1, overflow:'hidden'}}>
+          {/* Left nav */}
+          <div style={{
+            width:150, flexShrink:0,
+            borderRight:'1px solid var(--border)',
+            background:'var(--bg-deep)',
+            padding:'8px 0',
+          }}>
+            {NAV.map(item => (
+              <button key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                style={{
+                  width:'100%', textAlign:'left', padding:'9px 16px',
+                  background: activeTab===item.id ? 'var(--accent-dim)' : 'transparent',
+                  color: activeTab===item.id ? 'var(--accent)' : 'var(--text-secondary)',
+                  border:'none', cursor:'pointer', fontSize:13, fontWeight: activeTab===item.id ? 600 : 400,
+                  borderLeft: activeTab===item.id ? '3px solid var(--accent)' : '3px solid transparent',
+                }}
+              >{item.label}</button>
+            ))}
+          </div>
+
+          {/* Right content */}
+          <div style={{flex:1, overflowY:'auto', padding:'20px 24px'}}>
+            {renderContent()}
+          </div>
+        </div>
+
         <div className="modal-footer">
           <button className="props-btn accent" onClick={closeModal}>Done</button>
         </div>

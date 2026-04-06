@@ -7,6 +7,10 @@ import PropertiesPanel from './components/PropertiesPanel/PropertiesPanel'
 import AddDeviceModal from './components/Modals/AddDeviceModal'
 import ExportModal    from './components/Modals/ExportModal'
 import UpdateToast    from './components/UpdateToast'
+import StageCanvas       from './components/Stage/StageCanvas'
+import StageSetupModal  from './components/Modals/StageSetupModal'
+import StageExportModal from './components/Modals/StageExportModal'
+import StagePanel     from './components/Stage/StagePanel'
 import AddCableModal  from './components/Modals/AddCableModal'
 import SettingsModal  from './components/Modals/SettingsModal'
 import ConfirmModal   from './components/Modals/ConfirmModal'
@@ -15,7 +19,16 @@ import useStore from './store/useStore'
 import { platform } from './platform'
 
 export default function App() {
-  const { loadIcons, loadDeviceLibrary, saveProject, loadProject, deleteSelected, activeModal, theme } = useStore()
+  const { loadIcons, loadDeviceLibrary, saveProject, loadProject, deleteSelected, activeModal, theme, openModal } = useStore()
+  const appMode      = useStore(s => s.appMode)
+  const stageInited  = useStore(s => s.stageData?.initialized)
+
+  // Open Stage Setup modal when switching to stage mode if stage not yet configured
+  useEffect(() => {
+    if (appMode === 'stage' && !stageInited) {
+      openModal('stageSetup')
+    }
+  }, [appMode, stageInited])
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -44,7 +57,7 @@ export default function App() {
       // Ctrl+E — export
       if (e.key === 'e' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
-        useStore.getState().openModal('export')
+        const st = useStore.getState(); st.openModal(st.appMode === 'stage' ? 'stageExport' : 'export')
         return
       }
       // Escape — close modal / deselect
@@ -57,7 +70,23 @@ export default function App() {
       }
       // Delete / Backspace — delete selected (not in input)
       if (!inInput && (e.key === 'Delete' || e.key === 'Backspace')) {
-        useStore.getState().deleteSelected()
+        const state = useStore.getState()
+        if (state.appMode === 'stage') {
+          // Delete from stage data
+          const { selectedNodeId, selectedEdgeId, stageData, updateStageData } = state
+          if (selectedNodeId) {
+            updateStageData({
+              nodes: stageData.nodes.filter(n => n.id !== selectedNodeId),
+              edges: stageData.edges.filter(e => e.source !== selectedNodeId && e.target !== selectedNodeId),
+            })
+            state.clearSelection()
+          } else if (selectedEdgeId) {
+            updateStageData({ edges: stageData.edges.filter(e => e.id !== selectedEdgeId) })
+            state.clearSelection()
+          }
+        } else {
+          state.deleteSelected()
+        }
       }
     }
     window.addEventListener('keydown', handler)
@@ -110,21 +139,23 @@ export default function App() {
 
   return (
     <ReactFlowProvider>
-      <div className="app">
+    <div className="app">
         <Toolbar />
         <div className="workspace">
           <Sidebar />
-          <Canvas />
-          <PropertiesPanel />
+          {appMode === "schema" ? <Canvas /> : <StageCanvas />}
+          {appMode === "schema" ? <PropertiesPanel /> : <StagePanel />}
         </div>
         {activeModal === 'addDevice' && <AddDeviceModal />}
     {activeModal === 'addCable'  && <AddCableModal />}
     {activeModal === 'settings'  && <SettingsModal />}
-    {activeModal === 'confirm'   && <ConfirmModal />}
+    {activeModal === 'confirm'      && <ConfirmModal />}
+    {activeModal === 'stageExport'  && <StageExportModal />}
+    {activeModal === 'stageSetup'   && <StageSetupModal />}
     <UpdateToast />
         {activeModal === 'export'    && <ExportModal />}
         {activeModal === 'manual'    && <ManualModal />}
-      </div>
+    </div>
     </ReactFlowProvider>
   )
 }

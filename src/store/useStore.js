@@ -33,6 +33,7 @@ const useStore = create((set, get) => ({
     const state   = get()
 
     // Find rack node data to get its defined ports
+    const mainScene = state.scenes.main
     let rackNode = null
     for (const scene of Object.values(state.scenes)) {
       const found = scene?.nodes?.find(n => n.id === rackNodeId)
@@ -168,16 +169,29 @@ const useStore = create((set, get) => ({
   })),
 
   deleteSelected: () => {
-    const { selectedNodeId, selectedEdgeId } = get()
-    get()._updateScene(s => ({
-      ...s,
-      nodes: selectedNodeId ? s.nodes.filter(n => n.id !== selectedNodeId) : s.nodes,
-      edges: selectedEdgeId
-        ? s.edges.filter(e => e.id !== selectedEdgeId)
+    const { selectedNodeId, selectedEdgeId, appMode, stageData } = get()
+    if (appMode === 'stage') {
+      // Delete from stageData
+      const nodes = selectedNodeId
+        ? (stageData.nodes || []).filter(n => n.id !== selectedNodeId)
+        : (stageData.nodes || [])
+      const edges = selectedEdgeId
+        ? (stageData.edges || []).filter(e => e.id !== selectedEdgeId)
         : selectedNodeId
-          ? s.edges.filter(e => e.source !== selectedNodeId && e.target !== selectedNodeId)
-          : s.edges,
-    }))
+          ? (stageData.edges || []).filter(e => e.source !== selectedNodeId && e.target !== selectedNodeId)
+          : (stageData.edges || [])
+      get().updateStageData({ nodes, edges })
+    } else {
+      get()._updateScene(s => ({
+        ...s,
+        nodes: selectedNodeId ? s.nodes.filter(n => n.id !== selectedNodeId) : s.nodes,
+        edges: selectedEdgeId
+          ? s.edges.filter(e => e.id !== selectedEdgeId)
+          : selectedNodeId
+            ? s.edges.filter(e => e.source !== selectedNodeId && e.target !== selectedNodeId)
+            : s.edges,
+      }))
+    }
     set({ selectedNodeId: null, selectedEdgeId: null })
   },
 
@@ -221,21 +235,52 @@ const useStore = create((set, get) => ({
   deviceLibrary: [],
   customCableTypes: [],  // user-defined cable types
   settings: {
-    enforceConnectorTypes: false,  // warn when cable/connector mismatch
-    defaultExportFormat: 'html',   // 'html' | 'png'
+    enforceConnectorTypes: false,
+    defaultExportFormat: 'html',
     defaultExportLegend: true,
     defaultExportColor:  true,
+    stageFohColor:            '#EF4444',
+    stagePersonalColor:       '#6366f1',
+    defaultStageCount:        1,
+    defaultStageFohDirection: 'S',
+    defaultStageWidth:        600,
+    defaultStageHeight:       400,
+  },
+
+  // ── Stage Plot ───────────────────────────────────────────────
+  appMode: 'schema',   // 'schema' | 'stage'
+  stageData: {
+    initialized: false,
+    stages:      [],
+    nodes:       [],
+    edges:       [],
+    rider:       {},
+  },
+  setAppMode:      (mode) => set({ appMode: mode }),
+  updateStageData: (patch) => {
+    set(state => ({ stageData: { ...state.stageData, ...patch }, isDirty: true }))
   },
 
   loadDeviceLibrary: async () => {
     if (!window.electronAPI) return
     const raw = await platform.loadDeviceLibrary()
-    if (raw) set({ deviceLibrary: JSON.parse(raw) })
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      // Support both old format (array) and new format ({deviceLibrary, customCableTypes})
+      if (Array.isArray(parsed)) {
+        set({ deviceLibrary: parsed })
+      } else {
+        set({
+          deviceLibrary:    parsed.deviceLibrary    || [],
+          customCableTypes: parsed.customCableTypes || [],
+        })
+      }
+    }
   },
 
   saveDeviceLibrary: async () => {
-    const { deviceLibrary } = get()
-    await platform.saveDeviceLibrary(JSON.stringify(deviceLibrary, null, 2))
+    const { deviceLibrary, customCableTypes } = get()
+    await platform.saveDeviceLibrary(JSON.stringify({ deviceLibrary, customCableTypes }, null, 2))
   },
 
   // Custom cable types
@@ -326,7 +371,9 @@ const useStore = create((set, get) => ({
       return out
     }
     const content = JSON.stringify({
-      version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary, customCableTypes: get().customCableTypes
+      version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary,
+      customCableTypes: get().customCableTypes,
+      stageData: get().stageData,
     }, null, 2)
     const fp = await platform.saveProject(content, currentFilePath)
     if (fp) {
@@ -383,6 +430,7 @@ const useStore = create((set, get) => ({
       currentFilePath: result.filePath,
       deviceLibrary:      data.deviceLibrary      || [],
       customCableTypes:   data.customCableTypes   || [],
+      stageData:          data.stageData ? { initialized: false, stages: [], nodes: [], edges: [], rider: {}, ...data.stageData } : { initialized: false, stages: [], nodes: [], edges: [], rider: {} },
       isDirty:         false,
       selectedNodeId:  null,
       selectedEdgeId:  null,
@@ -398,6 +446,7 @@ const useStore = create((set, get) => ({
     selectedNodeId:  null,
     selectedEdgeId:  null,
     deviceLibrary:   [],
+    stageData:       { initialized: false, stages: [], nodes: [], edges: [], rider: {} },
   }),
 }))
 

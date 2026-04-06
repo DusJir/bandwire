@@ -60,8 +60,8 @@ export default function AddDeviceModal() {
   )
 
   return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+    <div className="modal-backdrop" onMouseDown={closeModal}>
+      <div className="modal" onMouseDown={e => e.stopPropagation()}>
         <div className="modal-header">
           <span>{t('addCustomDeviceTitle')}</span>
           <button className="modal-close" onClick={closeModal}>×</button>

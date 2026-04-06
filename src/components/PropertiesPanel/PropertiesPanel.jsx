@@ -40,9 +40,11 @@ export default function PropertiesPanel() {
     updateNodeData, updateEdgeData, deleteSelected,
     selectedCableType, setSelectedCableType,
     customCableTypes, openModal, deleteCustomCableType,
-    scenes,
   } = useStore()
-  const scene = useStore(s => s.currentScene())
+  const scenes     = useStore(s => s.scenes)
+  const sceneStack = useStore(s => s.sceneStack)
+  const sceneId    = sceneStack[sceneStack.length - 1]
+  const scene      = scenes?.[sceneId]
   const node  = scene?.nodes.find(n => n.id === selectedNodeId)
   const edge  = scene?.edges.find(e => e.id === selectedEdgeId)
 

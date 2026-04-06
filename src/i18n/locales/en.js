@@ -42,6 +42,9 @@ export default {
   noFactoryIcons: 'No factory icons loaded.',
   defaultInputs: 'Default Inputs', defaultOutputs: 'Default Outputs',
   inPort: 'In', outPort: 'Out',
+  mDeleteSelected: 'Delete selected',
+  close: 'Close',
+  newProject: 'New project',
   cancel: 'Cancel', saveDevice: 'Save Device',
 
   // Export modal
@@ -77,6 +80,20 @@ export default {
   mExport: 'Export', mIconLibrary: 'Icon Library', mProjects: 'Project Files',
 
   // Manual — body
+
+  mNodes: 'Devices on Canvas',
+  mNodesText: 'Each device is a node on the canvas. Nodes have input and output port handles — drag from a handle to create a cable connection. Click a node to select it and edit its properties in the right panel.',
+  mAddingNodes: 'Adding Devices',
+  mAddingNodesText: 'Drag any device from the left sidebar onto the canvas. Devices can be repositioned freely. Delete selected devices with the Delete or Backspace key.',
+  mConnections: 'Connections',
+  mConnectionsText: 'Drag from one port handle to another to create a cable. Select a cable to assign a cable type and label. Cable colors follow the cable type definition.',
+  mCableTypesText: 'Built-in cable types (XLR, TRS, HDMI, etc.) appear in the sidebar. Add custom cable types with the ＋ button. Custom types can have specific colors, line styles, and connector compatibility rules.',
+  mProperties: 'Properties',
+  mPropertiesText: 'Click any node or cable to open its properties in the right panel. Set label, model/make, notes, color accent, and port connector types. All changes are reflected live on the canvas.',
+  mPorts: 'Ports & Connector Types',
+  mPortsText: 'Each device can have multiple input and output ports. Assign connector types (XLR, TRS, Speakon, etc.) to ports in the Properties panel. Connector types appear in port tooltips and the exported legend.',
+  mRacks: 'Rack Scenes',
+  mRacksText: 'Racks are container nodes representing physical equipment racks. Double-click a Rack node to enter its internal scene and map signal routing between rack devices.',
   mGettingStartedText: 'BandWire lets you draw signal flow diagrams — what\'s connected to what, with which cable. Drag devices from the left panel onto the canvas, then connect them by dragging from one port handle to another.',
   mCanvasList: [
     ['Pan', 'Click and drag on empty canvas'],
@@ -106,7 +123,22 @@ export default {
   mLegendFormat: 'Legend format',
   mIconLibraryText: 'Place SVG files in Documents/BandWire/icons/{category}/device_name.svg. Best results with white icons on transparent background, 64×64 px artboard. Underscores in filenames become spaces in labels. Restart to reload.',
   mIconLibraryAD2: 'When exporting from Affinity Designer 2: use SVG (for export) preset, enable Flatten transforms and Export text as curves, disable metadata embedding. Ensure the exported SVG has a viewBox attribute.',
-  mProjectsText: 'Projects are saved as .sflow files (JSON). All scenes, devices, cable types, and layout are stored in one file. Icons are not embedded — they are resolved from the icon library on load.',
+  mProjectsText: 'Projects are saved as .sflow files (JSON). All scenes, devices, cable types, stage plot data, and layout are stored in one file. Icons are not embedded — they are resolved from the icon library on load.',
+
+  // Stage Plot
+  mStage: 'Stage Plot',
+  mStageTagline: 'Visual stage layout for musicians and FOH engineers',
+  mStageIntro: 'Switch to Stage mode using the ⚡ Schema / 🎸 Stage buttons in the toolbar. Stage Plot shares the same project file as the signal flow schema.',
+  mStageDevices: 'Stage Devices',
+  mStageDevicesText: 'Drag any device from the left sidebar onto the Stage canvas. Each device has two connection anchors — left (IN) and right (OUT). Drag from an anchor to connect devices with a cable line.',
+  mStageRoles: 'Device & Cable Roles',
+  mStageRolesText: 'Select a device or cable and assign a role in the Properties panel: H (House/FOH) for venue-provided gear, P (Personal) for band gear. Role colors are configurable in Settings.',
+  mStageOutline: 'Stage Setup',
+  mStageOutlineText: 'When switching to Stage mode for the first time (or when the stage is unconfigured), a setup modal appears. Choose the number of stages (1–8), audience direction per stage (N/NE/E/SE/S/SW/W/NW), and dimensions. Stages are automatically positioned on the canvas based on their direction. You can reconfigure at any time using the Stage Setup section in the right panel or the ✎ button.',
+  mStageExport: 'Stage Export',
+  mStageExportText: 'Click Export in Stage mode for 5 export options: Full color, For FOH engineer (H highlighted), For band (P highlighted), Rider only, or Export all (3 files at once).',
+  mStageRider: 'Technical Rider',
+  mStageRiderText: 'The lower half of the right panel contains the rider form: Technical requirements, Monitoring, Backline, Contact, and Notes. This is included in the rider export.',
   mSettings: 'Settings',
   mSettingsText: 'Click ⚙ in the toolbar to open Settings. All settings are saved automatically and persist across sessions.',
   mSettingsList: [

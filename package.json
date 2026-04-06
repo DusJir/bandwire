@@ -1,6 +1,6 @@
 {
   "name": "bandwire",
-  "version": "1.1.4",
+  "version": "1.2.2",
   "description": "Signal flow diagram tool for live musicians",
   "homepage": "https://dev.grinware.cz",
   "main": "electron/main.js",
@@ -12,7 +12,10 @@
     "build:pwa": "cross-env BUILD_TARGET=pwa vite build",
     "dev:pwa": "cross-env BUILD_TARGET=pwa vite",
     "gen-icons": "node scripts/generate-icon-manifest.js",
-    "build:electron": "vite build"
+    "build:electron": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "author": {
     "name": "Barney Estrada",
@@ -69,7 +72,7 @@
       "mimeTypes": [
         "application/x-sflow"
       ],
-      "icon": "build"
+      "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -106,14 +109,21 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^4.1.2",
     "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "electron": "^35.7.5",
     "electron-builder": "^26.8.1",
+    "happy-dom": "^20.8.9",
+    "jsdom": "^29.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "vite": "^5.3.1",
+    "vitest": "^4.1.2",
     "wait-on": "^9.0.4"
   }
 }

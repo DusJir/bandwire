@@ -3,16 +3,19 @@ import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
 import { platform } from '../../platform'
 
-/*const RACK_ENTRY = {
+const RACK_ENTRY = {
   name: 'rack', src: null, isRack: true,
   tags: ['utility'], source: 'factory', label: 'Rack',
-}*/
+}
 
 export default function Sidebar() {
   const { t } = useTranslation('t')
   const iconsLibrary  = useStore(s => s.iconsLibrary)
   const deviceLibrary = useStore(s => s.deviceLibrary)
   const openModal          = useStore(s => s.openModal)
+  const appMode            = useStore(s => s.appMode)
+  const stageData          = useStore(s => s.stageData)
+  const updateStageData    = useStore(s => s.updateStageData)
   const deleteCustomDevice = useStore(s => s.deleteCustomDevice)
   const scenes             = useStore(s => s.scenes)
   const sceneStack    = useStore(s => s.sceneStack)
@@ -55,9 +58,9 @@ export default function Sidebar() {
     return allItems.filter(item => {
       if (isInRack && !item.tags?.includes('rack')) return false
       if (activeTag && !item.tags?.includes(activeTag)) return false
-      return !(q && !item.label?.toLowerCase().includes(q) &&
-          !item.tags?.join(' ').toLowerCase().includes(q));
-
+      if (q && !item.label?.toLowerCase().includes(q) &&
+               !item.tags?.join(' ').toLowerCase().includes(q)) return false
+      return true
     })
   }, [allItems, search, activeTag, isInRack])
 
@@ -204,6 +207,7 @@ export default function Sidebar() {
 
       <div className="sidebar-footer">
         <button onClick={() => openModal('addDevice')}>{t('addCustomDevice')}</button>
+
         <button onClick={() => platform.openIconsFolder()}>{t('openIconsFolder')}</button>
       </div>
     </aside>
