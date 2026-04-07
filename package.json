@@ -72,7 +72,7 @@
       "mimeTypes": [
         "application/x-sflow"
       ],
-      "icon": "build/icon.ico"
+      "icon": "build/icon.png"
     },
     "nsis": {
       "oneClick": false,
