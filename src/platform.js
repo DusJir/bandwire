@@ -79,7 +79,18 @@ async function loadIconsFromManifest() {
   try {
     const resp = await fetch('./icon-manifest.json')
     if (!resp.ok) return []
-    return await resp.json()
+    const entries = await resp.json()
+    // Fetch SVG content for each icon (PWA needs content, not just path)
+    const results = await Promise.all(entries.map(async entry => {
+      try {
+        const r = await fetch('./' + entry.path)
+        const content = r.ok ? await r.text() : ''
+        return { ...entry, content }
+      } catch {
+        return { ...entry, content: '' }
+      }
+    }))
+    return results.filter(e => e.content)
   } catch {
     return []
   }

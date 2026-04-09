@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
 
@@ -77,6 +77,38 @@ function Section({ title, children }) {
         color:'var(--text-secondary)',marginBottom:12,paddingBottom:6,
         borderBottom:'1px solid var(--border)'}}>{title}</div>
       {children}
+    </div>
+  )
+}
+
+function StageDimInputs({ settings, updateSettings }) {
+  const [w, setW] = React.useState(settings.defaultStageWidth  || 600)
+  const [h, setH] = React.useState(settings.defaultStageHeight || 400)
+
+  // Sync if settings change externally
+  React.useEffect(() => { setW(settings.defaultStageWidth  || 600) }, [settings.defaultStageWidth])
+  React.useEffect(() => { setH(settings.defaultStageHeight || 400) }, [settings.defaultStageHeight])
+
+  return (
+    <div style={{display:'flex',gap:12}}>
+      <div style={{flex:1}}>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:6}}>Default width (px)</div>
+        <input type="number" min={200} max={2000} step={50}
+          value={w}
+          onChange={e => setW(e.target.value)}
+          onBlur={e => updateSettings({ defaultStageWidth: parseInt(e.target.value)||600 })}
+          style={{width:'100%'}}
+        />
+      </div>
+      <div style={{flex:1}}>
+        <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:6}}>Default height (px)</div>
+        <input type="number" min={150} max={2000} step={50}
+          value={h}
+          onChange={e => setH(e.target.value)}
+          onBlur={e => updateSettings({ defaultStageHeight: parseInt(e.target.value)||400 })}
+          style={{width:'100%'}}
+        />
+      </div>
     </div>
   )
 }
@@ -187,24 +219,7 @@ export default function SettingsModal() {
               </div>
             </div>
 
-            <div style={{display:'flex',gap:12}}>
-              <div style={{flex:1}}>
-                <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:6}}>Default width (px)</div>
-                <input type="number" min={200} max={2000} step={50}
-                  value={settings.defaultStageWidth || 600}
-                  onChange={e => updateSettings({ defaultStageWidth: parseInt(e.target.value)||600 })}
-                  style={{width:'100%'}}
-                />
-              </div>
-              <div style={{flex:1}}>
-                <div style={{fontSize:12,fontWeight:600,color:'var(--text-primary)',marginBottom:6}}>Default height (px)</div>
-                <input type="number" min={150} max={2000} step={50}
-                  value={settings.defaultStageHeight || 400}
-                  onChange={e => updateSettings({ defaultStageHeight: parseInt(e.target.value)||400 })}
-                  style={{width:'100%'}}
-                />
-              </div>
-            </div>
+            <StageDimInputs settings={settings} updateSettings={updateSettings} />
           </Section>
         </div>
       )
