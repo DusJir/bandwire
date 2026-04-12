@@ -102,5 +102,12 @@ export default {
   mLegendFormat: 'Formát legendy',
   mIconLibraryText: 'Vložte SVG soubory do Dokumenty/BandWire/icons/{kategorie}/nazev_zarizeni.svg. Nejlepší výsledky s bílými ikonami na průhledném pozadí, čtvercový artboard 64×64 px. Podtržítka v názvech souborů se zobrazí jako mezery. Po přidání restartujte.',
   mIconLibraryAD2: 'Při exportu z Affinity Designer 2: použijte preset SVG (for export), zapněte Flatten transforms a Export text as curves, vypněte vkládání metadat. Ujistěte se, že exportovaný SVG obsahuje atribut viewBox.',
-  mProjectsText: 'Projekty se ukládají jako soubory .sflow (JSON). Všechny scény, zařízení a rozvržení jsou v jednom souboru.',
-}
+  mProjectsText: 'BandWire používá Knihovnu projektů jako primární úložiště. Projekty jsou uloženy jako záznamy v knihovně, každý obsahuje všechny scény, zařízení, typy kabelů, data stage a rozvržení.',
+  mProjectLibrary: 'Knihovna projektů',
+  mProjectLibraryText: 'Modal Knihovny (tlačítko Library v toolbaru nebo Ctrl+O) zobrazuje všechny uložené projekty jako karty s ikonami schema/stage/obojí. Kliknutím na kartu projekt otevřete.',
+  mProjectLibrarySave: 'Ukládání projektů',
+  mProjectLibrarySaveText: 'Ctrl+S uloží aktuální projekt do knihovny. Při prvním uložení se otevře formulář pro zadání názvu, popisu, kategorie a poznámek. Každý další Ctrl+S záznam tiše aktualizuje.',
+  mProjectLibrarySaveAs: 'Uložit jako',
+  mProjectLibrarySaveAsText: 'Ctrl+Shift+S vždy otevře formulář uložení a vytvoří nový záznam v knihovně — vhodné pro větvení projektu pod novým názvem.',
+  mProjectLibraryImport: 'Import / Export',
+  mProjectLibraryImportText: 'V modalu Knihovny použijte Import file pro načtení souboru .sflow z disku. Tlačítkem ↓ u karty projekt exportujte jako soubor .sflow.',}

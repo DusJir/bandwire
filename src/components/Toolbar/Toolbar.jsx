@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
+import { platform } from '../../platform'
 import { APP_VERSION } from '../../version'
 import LangSelector from './LangSelector'
 
@@ -22,6 +23,12 @@ import schemaInvSvg   from '../../assets/app-icons/app-schem-inv.svg'
 import stageSvg       from '../../assets/app-icons/app-stage.svg'
 import stageInvSvg    from '../../assets/app-icons/app-stage-inv.svg'
 import manualInvSvg   from '../../assets/app-icons/app-manual-inv.svg'
+import librarySvg     from '../../assets/app-icons/app-library.svg'
+import libraryInvSvg  from '../../assets/app-icons/app-library-inv.svg'
+import saveAsSvg      from '../../assets/app-icons/app-save-as.svg'
+import saveAsInvSvg   from '../../assets/app-icons/app-save-as-inv.svg'
+import importSvg      from '../../assets/app-icons/app-import.svg'
+import importInvSvg   from '../../assets/app-icons/app-import-inv.svg'
 
 const ICONS = {
   'app-new':      [newSvg,      newInvSvg],
@@ -33,6 +40,9 @@ const ICONS = {
   'app-manual':   [manualSvg,   manualInvSvg],
   'app-schema':   [schemaSvg,   schemaInvSvg],
   'app-stage':    [stageSvg,    stageInvSvg],
+  'app-library':  [librarySvg,  libraryInvSvg],
+  'app-save-as':  [saveAsSvg,   saveAsInvSvg],
+  'app-import':   [importSvg,   importInvSvg],
 }
 
 function TbIcon({ name, size = 16 }) {
@@ -47,11 +57,12 @@ function TbIcon({ name, size = 16 }) {
 export default function Toolbar() {
   const { t } = useTranslation('t')
   const {
-    projectName, isDirty, theme, appMode, setAppMode,
-    saveProject, loadProject, newProject,
-    toggleTheme, openModal,
+    isDirty, theme, appMode, setAppMode,
+    saveProject, newProject, saveToLibrary,
+    toggleTheme, openModal, libraryId,
     sceneStack, scenes, navigateToScene, exitScene,
   } = useStore()
+  const projectName = useStore(s => s.projectName)
 
   const crumbs = sceneStack.map((id, i) => ({
     id, label: scenes[id]?.label || (id === 'main' ? 'Main' : id), idx: i
@@ -69,11 +80,24 @@ export default function Toolbar() {
       <button className="tb-btn" onClick={newProject} title="New project (Ctrl+N)">
         <TbIcon name="app-new" /> {t('new')}
       </button>
-      <button className="tb-btn" onClick={saveProject} title="Save (Ctrl+S)">
+      <button className="tb-btn" onClick={async () => {
+          if (libraryId) {
+            const entry = await platform.library.get(libraryId)
+            if (entry) {
+              useStore.getState().saveToLibrary({ name: entry.name, description: entry.description, filename: entry.filename, category: entry.category, notes: entry.notes, createdAt: entry.createdAt })
+              return
+            }
+          }
+          openModal('saveToLibrary')
+        }} title="Save to Library (Ctrl+S)">
         <TbIcon name="app-save" /> {t('save')} {isDirty && <span className="dirty-dot" />}
       </button>
-      <button className="tb-btn" onClick={loadProject} title="Open (Ctrl+O)">
-        <TbIcon name="app-open" /> {t('open')}
+      <button className="tb-btn" onClick={() => openModal('saveToLibrary', { saveAs: true })}
+        title="Save As… (Ctrl+Shift+S)">
+        <TbIcon name="app-save-as" /> {t('saveAs')}
+      </button>
+      <button className="tb-btn" onClick={() => openModal('library')} title="Project Library (Ctrl+O)">
+        <TbIcon name="app-library" /> {t('open')}
       </button>
 
       <div className="toolbar-sep" />
