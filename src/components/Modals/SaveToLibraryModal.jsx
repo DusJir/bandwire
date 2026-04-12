@@ -4,7 +4,7 @@ import useStore from '../../store/useStore'
 export default function SaveToLibraryModal() {
   const { closeModal, saveToLibrary, projectName, modalPayload } = useStore(s => ({ closeModal: s.closeModal, saveToLibrary: s.saveToLibrary, projectName: s.projectName, modalPayload: s.modalPayload }))
 
-  const existing = modalPayload?.saveAs ? null : (modalPayload?.existing || null)
+  const existing = modalPayload?.existing || null
   const isSaveAs = !!modalPayload?.saveAs
 
   const [name,        setName]        = useState(existing?.name        || projectName || '')
