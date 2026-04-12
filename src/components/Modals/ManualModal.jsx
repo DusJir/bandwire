@@ -79,13 +79,22 @@ export default function ManualModal() {
 
           <Section title={t('mProjects')}>
             <P k="mProjectsText" />
+            <Sub title={t('mProjectLibrary')} />
+            <P k="mProjectLibraryText" />
+            <Sub title={t('mProjectLibrarySave')} />
+            <P k="mProjectLibrarySaveText" />
+            <Sub title={t('mProjectLibrarySaveAs')} />
+            <P k="mProjectLibrarySaveAsText" />
+            <Sub title={t('mProjectLibraryImport')} />
+            <P k="mProjectLibraryImportText" />
           </Section>
 
           <Section title={t('mKeyboard')}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 16px' }}>
               {[
-                ['Ctrl+S', t('save')],
-                ['Ctrl+O', t('open')],
+                ['Ctrl+S', t('save') + ' (to Library)'],
+                ['Ctrl+Shift+S', t('saveAs')],
+                ['Ctrl+O', 'Open Library'],
                 ['Ctrl+N', t('newProject')],
                 ['Ctrl+E', t('export')],
                 ['Del / Backspace', t('mDeleteSelected')],

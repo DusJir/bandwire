@@ -243,6 +243,7 @@ const useStore = create((set, get) => ({
     stagePersonalColor:       '#6366f1',
     defaultStageCount:        1,
     defaultStageFohDirection: 'S',
+    exportIncludeNotes:       false,
     defaultStageWidth:        600,
     defaultStageHeight:       400,
   },
@@ -348,10 +349,137 @@ const useStore = create((set, get) => ({
   openModal:  (name, payload) => set({ activeModal: name, modalPayload: payload || null }),
   closeModal: ()               => set({ activeModal: null, modalPayload: null }),
 
+  // ── Project Library ────────────────────────────────────────
+  libraryId:       null,  // id of current project in library (null = not in library)
+
   // ── Project ──────────────────────────────────────────────────
   projectName:     'Untitled',
   currentFilePath: null,
   isDirty:         false,
+
+  // Build serialized project content (shared between save actions)
+  _buildProjectContent: () => {
+    const { scenes, projectName, customCableTypes, settings } = get()
+    const stageData = get().stageData
+    const deviceLibrary = get().deviceLibrary
+    const stripSrc = (sceneMap) => {
+      const out = {}
+      for (const [sid, scene] of Object.entries(sceneMap)) {
+        out[sid] = {
+          ...scene,
+          nodes: (scene.nodes || []).map(n => {
+            if (!n.data?.iconSrc) return n
+            const { iconSrc, ...rest } = n.data
+            return { ...n, data: rest }
+          })
+        }
+      }
+      return out
+    }
+    const data = { version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary, customCableTypes, stageData }
+    // Strip notes from export if settings say so
+    if (!settings.exportIncludeNotes) {
+      delete data._notes
+    }
+    return JSON.stringify(data, null, 2)
+  },
+
+  // Save current project to library (create or update)
+  // meta.saveAs = true → always create new entry (ignore existing libraryId)
+  // meta.data   = string → use provided content instead of current canvas (for import)
+  saveToLibrary: async (meta) => {
+    const { _buildProjectContent, projectName, libraryId } = get()
+
+    // Use provided data (import) or build from current canvas state
+    let content = meta.data || _buildProjectContent()
+
+    // Determine hasSchema/hasStage from content
+    let hasSchema, hasStage
+    if (meta.data) {
+      // Parse provided data to detect content flags
+      try {
+        const parsed = JSON.parse(meta.data)
+        hasSchema = Object.values(parsed.scenes || {}).some(s => (s.nodes || []).length > 0)
+        hasStage  = (parsed.stageData?.nodes || []).some(n => n.type === 'stageDevice')
+      } catch {
+        hasSchema = false; hasStage = false
+      }
+    } else {
+      const stageData = get().stageData
+      hasSchema = Object.values(get().scenes || {}).some(s => (s.nodes || []).length > 0)
+      hasStage  = (stageData.nodes || []).some(n => n.type === 'stageDevice')
+    }
+
+    const now = new Date().toISOString()
+    // Save As always gets a fresh UUID; import also gets fresh UUID (meta.saveAs or no existing id)
+    const id = (meta.saveAs || !libraryId) ? crypto.randomUUID() : libraryId
+    const entry = {
+      id,
+      name:        meta.name        || projectName,
+      description: meta.description || '',
+      filename:    meta.filename     || (projectName.toLowerCase().replace(/\s+/g, '-') + '.sflow'),
+      category:    meta.category    || '',
+      notes:       meta.notes       || '',
+      createdAt:   meta.createdAt   || now,
+      updatedAt:   now,
+      hasSchema,
+      hasStage,
+      data:        content,
+    }
+    await platform.library.put(entry)
+    // For import (meta.data provided), don't switch libraryId — user hasn't opened the project
+    if (!meta.data) {
+      set({ libraryId: id, isDirty: false, projectName: entry.name })
+    }
+    return entry
+  },
+
+  // Load project from library entry
+  loadFromLibrary: async (entry) => {
+    const data = JSON.parse(entry.data)
+    let scenes = data.scenes
+    if (!scenes) {
+      scenes = { main: { id: 'main', label: 'Main', nodes: data.nodes || [], edges: data.edges || [] } }
+    }
+    const resolveIcons = (sceneMap, lib) => {
+      const flatLib = {}
+      for (const icons of Object.values(lib)) {
+        for (const ic of icons) {
+          flatLib[ic.name] = ic.src
+          flatLib[ic.name.replace(/_/g, ' ')] = ic.src
+        }
+      }
+      const resolved = {}
+      for (const [sid, scene] of Object.entries(sceneMap)) {
+        resolved[sid] = {
+          ...scene,
+          nodes: (scene.nodes || []).map(n => {
+            if (n.type !== 'hardware') return n
+            const iconName = n.data?.iconName || n.data?.label?.toLowerCase().replace(/\s+/g, '_') || ''
+            const src = flatLib[iconName] || flatLib[n.data?.label] || null
+            return { ...n, data: { ...n.data, iconSrc: src } }
+          })
+        }
+      }
+      return resolved
+    }
+    const currentLib = get().iconsLibrary
+    const resolvedScenes = resolveIcons(scenes, currentLib)
+    set({
+      scenes:          resolvedScenes,
+      sceneStack:      ['main'],
+      projectName:     entry.name || data.projectName || 'Untitled',
+      currentFilePath: null,
+      libraryId:       entry.id,
+      isDirty:         false,
+      customCableTypes: data.customCableTypes || [],
+      deviceLibrary:   data.deviceLibrary    || [],
+      stageData:       data.stageData ? { initialized: false, stages: [], nodes: [], edges: [], rider: {}, ...data.stageData } : { initialized: false, stages: [], nodes: [], edges: [], rider: {} },
+      selectedNodeId:  null,
+      selectedEdgeId:  null,
+    })
+    get().openModal(null)
+  },
 
   saveProject: async () => {
     const { scenes, projectName, currentFilePath, deviceLibrary } = get()
@@ -447,6 +575,7 @@ const useStore = create((set, get) => ({
     selectedEdgeId:  null,
     deviceLibrary:   [],
     stageData:       { initialized: false, stages: [], nodes: [], edges: [], rider: {} },
+      libraryId:       null,
   }),
 }))
 

@@ -103,5 +103,13 @@ export default {
   mLegendFormat: 'Legendenformat',
   mIconLibraryText: 'Legen Sie SVG-Dateien in Dokumente/BandWire/icons/{kategorie}/gerätename.svg ab. Beste Ergebnisse mit weißen Symbolen auf transparentem Hintergrund, quadratisches Artboard 64×64 px. Unterstriche in Dateinamen werden zu Leerzeichen. Neustart zum Laden.',
   mIconLibraryAD2: 'Beim Export aus Affinity Designer 2: SVG (for export)-Preset verwenden, Flatten transforms und Export text as curves aktivieren, Metadaten-Einbettung deaktivieren.',
+  mProjectLibrary: 'Project Library',
+  mProjectLibraryText: 'The Library modal (toolbar Library button or Ctrl+O) shows all saved projects as cards. Click any card to open it.',
+  mProjectLibrarySave: 'Saving Projects',
+  mProjectLibrarySaveText: 'Ctrl+S saves to the library. On first save, a form opens for name, description, category, and notes. Subsequent saves update silently.',
+  mProjectLibrarySaveAs: 'Save As',
+  mProjectLibrarySaveAsText: 'Ctrl+Shift+S always opens the save form, creating a new library entry.',
+  mProjectLibraryImport: 'Import / Export',
+  mProjectLibraryImportText: 'Use Import file in the Library modal to load a .sflow from disk. Use ↓ on any project card to export it.',
   mProjectsText: 'Projekte werden als .sflow-Dateien (JSON) gespeichert. Alle Szenen, Geräte und Layouts werden in einer Datei gespeichert.',
 }

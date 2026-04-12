@@ -8,6 +8,8 @@ import AddDeviceModal from './components/Modals/AddDeviceModal'
 import ExportModal    from './components/Modals/ExportModal'
 import UpdateToast    from './components/UpdateToast'
 import StageCanvas       from './components/Stage/StageCanvas'
+import LibraryModal      from './components/Modals/LibraryModal'
+import SaveToLibraryModal from './components/Modals/SaveToLibraryModal'
 import StageSetupModal  from './components/Modals/StageSetupModal'
 import StageExportModal from './components/Modals/StageExportModal'
 import StagePanel     from './components/Stage/StagePanel'
@@ -19,7 +21,7 @@ import useStore from './store/useStore'
 import { platform } from './platform'
 
 export default function App() {
-  const { loadIcons, loadDeviceLibrary, saveProject, loadProject, deleteSelected, activeModal, theme, openModal } = useStore()
+  const { loadIcons, loadDeviceLibrary, saveProject, loadProject, deleteSelected, activeModal, theme, openModal, saveToLibrary, libraryId } = useStore()
   const appMode      = useStore(s => s.appMode)
   const stageInited  = useStore(s => s.stageData?.initialized)
 
@@ -36,18 +38,6 @@ export default function App() {
       const tag = document.activeElement?.tagName?.toLowerCase()
       const inInput = tag === 'input' || tag === 'textarea' || tag === 'select'
 
-      // Ctrl+S — save
-      if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        useStore.getState().saveProject()
-        return
-      }
-      // Ctrl+O — open
-      if (e.key === 'o' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        useStore.getState().loadProject()
-        return
-      }
       // Ctrl+N — new
       if (e.key === 'n' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
@@ -123,14 +113,39 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  const handleKey = useCallback((e) => {
+  const handleKey = useCallback(async (e) => {
     const active = document.activeElement
     const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)
     if (isInput) return
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveProject() }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'o') { e.preventDefault(); loadProject() }
+
+    // Ctrl+Shift+S — save as (new library entry)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+      e.preventDefault()
+      openModal('saveToLibrary', { saveAs: true })
+      return
+    }
+    // Ctrl+S — save to library
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 's') {
+      e.preventDefault()
+      const state = useStore.getState()
+      if (state.libraryId) {
+        const entry = await platform.library.get(state.libraryId)
+        if (entry) {
+          state.saveToLibrary({ name: entry.name, description: entry.description, filename: entry.filename, category: entry.category, notes: entry.notes, createdAt: entry.createdAt })
+          return
+        }
+      }
+      openModal('saveToLibrary')
+      return
+    }
+    // Ctrl+O — open library
+    if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+      e.preventDefault()
+      openModal('library')
+      return
+    }
     if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected()
-  }, [saveProject, loadProject, deleteSelected])
+  }, [saveProject, loadProject, deleteSelected, openModal])
 
   useEffect(() => {
     window.addEventListener('keydown', handleKey)
@@ -152,6 +167,8 @@ export default function App() {
     {activeModal === 'confirm'      && <ConfirmModal />}
     {activeModal === 'stageExport'  && <StageExportModal />}
     {activeModal === 'stageSetup'   && <StageSetupModal />}
+    {activeModal === 'library'      && <LibraryModal />}
+    {activeModal === 'saveToLibrary' && <SaveToLibraryModal />}
     <UpdateToast />
         {activeModal === 'export'    && <ExportModal />}
         {activeModal === 'manual'    && <ManualModal />}

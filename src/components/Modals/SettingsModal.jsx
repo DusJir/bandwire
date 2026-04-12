@@ -270,6 +270,23 @@ export default function SettingsModal() {
             </div>
           </Section>
 
+          <Section title="Library">
+            <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
+              <div style={{
+                width:16,height:16,borderRadius:3,flexShrink:0,
+                border:`2px solid ${settings.exportIncludeNotes?'var(--accent)':'var(--border-active)'}`,
+                background:settings.exportIncludeNotes?'var(--accent)':'transparent',
+                display:'flex',alignItems:'center',justifyContent:'center',
+              }} onClick={() => updateSettings({ exportIncludeNotes: !settings.exportIncludeNotes })}>
+                {settings.exportIncludeNotes && <span style={{color:'white',fontSize:10,fontWeight:700}}>✓</span>}
+              </div>
+              <div>
+                <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Include internal notes in export</div>
+                <div style={{fontSize:11,color:'var(--text-secondary)'}}>When sharing a project, include the library notes field</div>
+              </div>
+            </label>
+          </Section>
+
           <Section title="Stage Plan Export">
             <div style={{fontSize:12,color:'var(--text-secondary)'}}>
               Stage plan exports follow the format selected in the export dialog. Use the Stage Export button (🎸 → Export) for detailed options including engineer, band, and rider views.

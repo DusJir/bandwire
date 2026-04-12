@@ -123,7 +123,15 @@ export default {
   mLegendFormat: 'Legend format',
   mIconLibraryText: 'Place SVG files in Documents/BandWire/icons/{category}/device_name.svg. Best results with white icons on transparent background, 64×64 px artboard. Underscores in filenames become spaces in labels. Restart to reload.',
   mIconLibraryAD2: 'When exporting from Affinity Designer 2: use SVG (for export) preset, enable Flatten transforms and Export text as curves, disable metadata embedding. Ensure the exported SVG has a viewBox attribute.',
-  mProjectsText: 'Projects are saved as .sflow files (JSON). All scenes, devices, cable types, stage plot data, and layout are stored in one file. Icons are not embedded — they are resolved from the icon library on load.',
+  mProjectsText: 'BandWire uses a Project Library as its primary storage. Projects are saved as records in the library (IndexedDB), each containing all scenes, devices, cable types, stage data, and layout.',
+  mProjectLibrary: 'Project Library',
+  mProjectLibraryText: 'The Library modal (toolbar Library button or Ctrl+O) shows all saved projects as cards with schema/stage/both icons. Click any card to open it. Use the search bar to filter by name, category, or description.',
+  mProjectLibrarySave: 'Saving Projects',
+  mProjectLibrarySaveText: 'Ctrl+S (or toolbar Save) saves the current project to the library. On first save, a form opens to enter name, description, category, and internal notes. Subsequent Ctrl+S updates the existing record silently.',
+  mProjectLibrarySaveAs: 'Save As',
+  mProjectLibrarySaveAsText: 'Ctrl+Shift+S (or toolbar Save As) always opens the save form, creating a new library entry — useful for branching a project under a new name.',
+  mProjectLibraryImport: 'Import / Export',
+  mProjectLibraryImportText: 'Use Import file in the Library modal to load a .sflow file from disk into the library. Use the ↓ button on any project card to export it as a .sflow file. In PWA mode, export triggers a browser download.',
 
   // Stage Plot
   mStage: 'Stage Plot',
