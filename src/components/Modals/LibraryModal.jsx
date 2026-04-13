@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
 import { platform } from '../../platform'
 
@@ -22,7 +23,7 @@ function formatDate(iso) {
   return d.toLocaleDateString(undefined, { day:'2-digit', month:'short', year:'numeric' })
 }
 
-function ProjectCard({ entry, onOpen, onDelete, onExport, theme }) {
+function ProjectCard({ entry, onOpen, onDelete, onExport, theme, t }) {
   const icon = projectIcon(entry, theme)
   return (
     <div style={{
@@ -46,10 +47,10 @@ function ProjectCard({ entry, onOpen, onDelete, onExport, theme }) {
         onClick={e => e.stopPropagation()}>
         {onExport && (
           <button className="props-btn" style={{padding:'2px 7px',fontSize:10}}
-            title="Export to file" onClick={() => onExport(entry)}>↓</button>
+            title={t('libraryExportFile')} onClick={() => onExport(entry)}>↓</button>
         )}
         <button className="props-btn danger" style={{padding:'2px 7px',fontSize:10}}
-          title="Remove from library" onClick={() => onDelete(entry)}>×</button>
+          title={t('libraryRemove')} onClick={() => onDelete(entry)}>×</button>
       </div>
 
       {/* Icon */}
@@ -86,6 +87,7 @@ function ProjectCard({ entry, onOpen, onDelete, onExport, theme }) {
 }
 
 export default function LibraryModal() {
+  const { t } = useTranslation('t')
   const { closeModal, loadFromLibrary, loadProject, openModal, theme } = useStore()
   const [entries,  setEntries]  = useState([])
   const [search,   setSearch]   = useState('')
@@ -113,7 +115,7 @@ export default function LibraryModal() {
   }
 
   const handleDelete = async (entry) => {
-    if (!confirm(`Remove "${entry.name}" from library? The project data will be lost.`)) return
+    if (!confirm(t('libraryConfirmRemove').replace('{name}', entry.name))) return
     await platform.library.delete(entry.id)
     reload()
   }
@@ -148,7 +150,7 @@ export default function LibraryModal() {
           display:'flex', flexDirection:'column'}}>
 
         <div className="modal-header">
-          <span>Project Library</span>
+          <span>{t('libraryTitle')}</span>
           <button className="modal-close" onClick={closeModal}>×</button>
         </div>
 
@@ -156,37 +158,37 @@ export default function LibraryModal() {
         <div style={{padding:'10px 16px',borderBottom:'1px solid var(--border)',
           display:'flex',gap:8,alignItems:'center'}}>
           <input value={search} onChange={e => setSearch(e.target.value)}
-            placeholder="Search projects..."
+            placeholder={t('librarySearch')}
             style={{flex:1,maxWidth:320}}
           />
           <span style={{fontSize:12,color:'var(--text-dim)',marginLeft:4}}>
-            {filtered.length} project{filtered.length !== 1 ? 's' : ''}
+            {filtered.length === 1 ? t('libraryProjects').replace('{count}', 1) : t('libraryProjectsPlural').replace('{count}', filtered.length)}
           </span>
           <div style={{flex:1}}/>
           <button className="props-btn accent" onClick={() => {
             closeModal()
             useStore.getState().newProject()
             setTimeout(() => useStore.getState().openModal('saveToLibrary'), 50)
-          }}>+ New project</button>
-          <button className="props-btn" onClick={handleImport}>Import file</button>
-          <button className="props-btn" onClick={handleOpenFile}>Open from file</button>
+          }}>{t('libraryNewProject')}</button>
+          <button className="props-btn" onClick={handleImport}>{t('libraryImportFile')}</button>
+          <button className="props-btn" onClick={handleOpenFile}>{t('libraryOpenFile')}</button>
         </div>
 
         {/* Grid */}
         <div style={{flex:1,overflowY:'auto',padding:16}}>
           {loading ? (
             <div style={{color:'var(--text-dim)',textAlign:'center',marginTop:40}}>
-              Loading library...
+              {t('libraryLoading')}
             </div>
           ) : filtered.length === 0 ? (
             <div style={{color:'var(--text-dim)',textAlign:'center',marginTop:40}}>
-              {search ? 'No projects match your search.' : 'Library is empty. Save a project with Ctrl+S.'}
+              {search ? t('libraryNoMatch') : t('libraryEmpty')}
             </div>
           ) : (
             <div style={{display:'grid',
               gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:12}}>
               {filtered.map(entry => (
-                <ProjectCard key={entry.id} entry={entry} theme={theme}
+                <ProjectCard key={entry.id} entry={entry} theme={theme} t={t}
                   onOpen={handleOpen}
                   onDelete={handleDelete}
                   onExport={platform.isElectron() ? handleExport : null}
