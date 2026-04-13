@@ -1,6 +1,6 @@
 {
   "name": "bandwire",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Signal flow diagram tool for live musicians",
   "homepage": "https://dev.grinware.cz",
   "main": "electron/main.js",
