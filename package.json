@@ -1,6 +1,6 @@
 {
   "name": "bandwire",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Signal flow diagram tool for live musicians",
   "homepage": "https://dev.grinware.cz",
   "main": "electron/main.js",
@@ -81,6 +81,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "BandWire",
+      "artifactName": "BandWire-Setup-${version}.${ext}",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico"
     },
