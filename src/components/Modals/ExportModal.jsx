@@ -3,49 +3,31 @@ import { toPng } from 'html-to-image'
 import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
 import { platform } from '../../platform'
-import { CABLE_TYPES } from '../../constants/cableTypes'
+import { buildRows, listGroupNames, moveGroup, buildExportHtml, DEFAULT_LEGEND_CONFIG, GROUP_BY, IO_ORDER, themeColors } from '../../utils/legend'
 import { APP_NAME, APP_VERSION } from '../../version'
 
 export default function ExportModal() {
   const { t } = useTranslation('t')
-  const { closeModal, scenes, iconsLibrary, settings } = useStore()
-  const [color,     setColor]     = useState(settings?.defaultExportColor  ?? true)
+  const { closeModal, scenes, iconsLibrary, settings, updateSettings } = useStore()
+  const [theme,     setTheme]     = useState(settings?.exportTheme ?? 'light')
   const [legend,    setLegend]    = useState(settings?.defaultExportLegend ?? true)
   const [allScenes, setAllScenes] = useState(false)
+  const [cfg,       setCfg]       = useState({ ...DEFAULT_LEGEND_CONFIG, ...(settings?.exportLegend || {}) })
   const [exporting,    setExporting]    = useState(null) // 'png' | 'html' | null
   const [exportError,  setExportError]  = useState(null)
 
-  // Build legend rows from scene edges
-  const buildLegend = (scene) => {
-    const lines = []
-    const nodeMap = {}
-    for (const n of scene.nodes) nodeMap[n.id] = n
-    for (const edge of scene.edges) {
-      const src = nodeMap[edge.source]
-      const tgt = nodeMap[edge.target]
-      if (!src || !tgt) continue
-      // Handle IDs are positional: nodeId__out__idx — extract index to find port
-      const srcIdx  = parseInt((edge.sourceHandle || '').split('__').pop()) || 0
-      const tgtIdx  = parseInt((edge.targetHandle || '').split('__').pop()) || 0
-      const srcPort = (src.data.outputs || [])[srcIdx] || {}
-      const tgtPort = (tgt.data.inputs  || [])[tgtIdx] || {}
-      const cable   = CABLE_TYPES[edge.data?.cableType] || CABLE_TYPES.XLR
-      const srcStr  = (src.data.label || '?').toUpperCase()
-        + (srcPort.label     ? ' ' + srcPort.label.toUpperCase() : '')
-        + (srcPort.connector ? ' (' + srcPort.connector + ')' : '')
-      const tgtStr  = (tgt.data.label || '?').toUpperCase()
-        + (tgtPort.label     ? ' ' + tgtPort.label.toUpperCase() : '')
-        + (tgtPort.connector ? ' (' + tgtPort.connector + ')' : '')
-      lines.push({
-        src: srcStr, tgt: tgtStr,
-        cable: cable.label.split(' ')[0],
-        color: cable.color,
-        userLabel: edge.data?.label ? '  "' + edge.data.label + '"' : '',
-        sceneLabel: scene.label || 'Main',
-      })
-    }
-    return lines
+  const patchCfg = (patch) => {
+    const next = { ...cfg, ...patch }
+    setCfg(next)
+    updateSettings({ exportLegend: next })
   }
+
+  const scenesToExport = () => allScenes
+    ? Object.values(scenes).filter(Boolean)
+    : [useStore.getState().currentScene()].filter(Boolean)
+  const rows = scenesToExport().flatMap(sc => buildRows(sc))
+  // Group names in display order (drives the reorder list)
+  const groupNames = cfg.groupBy === 'none' ? [] : listGroupNames(rows, cfg)
 
   // Flat map of iconName -> data URI from current library
   const getIconDataUri = (altText) => {
@@ -76,16 +58,39 @@ export default function ExportModal() {
     img.src = src
   })
 
-  // Capture canvas as PNG dataUrl
-  const captureCanvas = async () => {
-    const el = document.querySelector('.react-flow__renderer')
-            || document.querySelector('.react-flow__viewport')
-            || document.querySelector('.react-flow')
-    if (!el) throw new Error('Canvas element not found')
+  const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
 
-      // Before html-to-image clones the DOM, replace ALL img[src] that are not data:
-    // by setting the attribute directly — html-to-image reads the attribute
-    const imgs = Array.from(el.querySelectorAll('img'))
+  // Bounding box of all nodes in canvas coordinates (measured from the DOM,
+  // so it works even when width/height are missing from the node data).
+  const measureBounds = (viewport) => {
+    const nodes = useStore.getState().currentScene()?.nodes || []
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (const n of nodes) {
+      const el = viewport.querySelector(`.react-flow__node[data-id="${CSS.escape(n.id)}"]`)
+      if (!el) continue
+      const pos = n.positionAbsolute || n.position || { x: 0, y: 0 }
+      minX = Math.min(minX, pos.x);               minY = Math.min(minY, pos.y)
+      maxX = Math.max(maxX, pos.x + el.offsetWidth); maxY = Math.max(maxY, pos.y + el.offsetHeight)
+    }
+    if (!isFinite(minX)) return null
+    return { x: minX, y: minY, w: maxX - minX, h: maxY - minY }
+  }
+
+  // Capture ONLY the diagram (cropped to the devices + margin), in the chosen theme.
+  const captureCanvas = async () => {
+    const viewport = document.querySelector('.react-flow__viewport')
+    if (!viewport) throw new Error('Canvas element not found')
+    const bounds = measureBounds(viewport)
+    if (!bounds) throw new Error('Nothing to export — the canvas is empty')
+
+    const PAD = 24
+    const width  = Math.ceil(bounds.w + PAD * 2)
+    const height = Math.ceil(bounds.h + PAD * 2)
+    const tx = PAD - bounds.x
+    const ty = PAD - bounds.y
+
+    // Replace non-data: image sources before html-to-image clones the DOM
+    const imgs = Array.from(viewport.querySelectorAll('img'))
     const origAttrs = imgs.map(img => img.getAttribute('src'))
     for (const img of imgs) {
       const s = img.getAttribute('src') || ''
@@ -96,30 +101,34 @@ export default function ExportModal() {
       }
     }
 
+    // Apply the export theme to the diagram only (independent of the app theme)
+    const origTheme = viewport.getAttribute('data-theme')
+    viewport.setAttribute('data-theme', theme)
+    await nextFrame()
+
     try {
-      return await toPng(el, {
-        backgroundColor: color ? '#0a0a12' : '#ffffff',
+      const dataUrl = await toPng(viewport, {
+        backgroundColor: themeColors(theme).bg,
         pixelRatio: 2,
         skipFonts: true,
-        filter: (node) => {
-          if (node.classList?.contains('react-flow__minimap')) return false
-          if (node.classList?.contains('react-flow__controls')) return false
-          return true
-        },
+        width, height,
+        style: { width: width + 'px', height: height + 'px', transform: `translate(${tx}px, ${ty}px) scale(1)` },
       })
+      return { dataUrl, size: { w: width, h: height } }
     } finally {
+      if (origTheme == null) viewport.removeAttribute('data-theme')
+      else viewport.setAttribute('data-theme', origTheme)
       imgs.forEach((img, i) => {
         if (origAttrs[i] != null) img.setAttribute('src', origAttrs[i])
       })
     }
   }
 
-  // Export as PNG
   const exportPng = async () => {
     setExporting('png')
     setExportError(null)
     try {
-      const dataUrl = await captureCanvas()
+      const { dataUrl } = await captureCanvas()
       await platform.exportImage(dataUrl, { format: 'png' })
       closeModal()
     } catch (e) {
@@ -129,62 +138,17 @@ export default function ExportModal() {
     }
   }
 
-  // Export as HTML (diagram image + signal legend)
   const exportHtml = async () => {
     setExporting('html')
     setExportError(null)
     try {
-      const dataUrl = await captureCanvas()
-
-      let legendHtml = ''
-      if (legend) {
-        const scenesToExport = allScenes
-          ? Object.values(scenes).filter(Boolean)
-          : [scenes.main].filter(Boolean)
-        const allLines = scenesToExport.flatMap(sc => buildLegend(sc))
-
-        const bg   = color ? '#0d0d18' : '#f8f8f8'
-        const fg   = color ? '#e0e0f0' : '#111111'
-        const sep  = color ? '#1e1e30' : '#e5e5e5'
-        const hdim = color ? '#555577' : '#888888'
-
-        legendHtml = `
-<div style="font-family:'Fira Mono',Consolas,monospace;font-size:13px;padding:20px 24px;background:${bg};color:${fg};border-top:2px solid ${color ? '#252538' : '#cccccc'}">
-  <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:${hdim};margin-bottom:12px">
-    Signal Legend — ${APP_NAME} ${APP_VERSION}
-  </div>
-  <table style="border-collapse:collapse;width:100%">
-    ${allLines.map(l => `
-    <tr style="border-bottom:1px solid ${sep}">
-      <td style="padding:4px 8px 4px 0;color:${l.color};font-size:11px;white-space:nowrap;font-weight:700">[${l.cable}]</td>
-      <td style="padding:4px 8px;white-space:nowrap">${l.src}</td>
-      <td style="padding:4px 6px;opacity:0.4;font-size:16px">→</td>
-      <td style="padding:4px 8px;white-space:nowrap">${l.tgt}</td>
-      ${l.userLabel ? `<td style="padding:4px 8px;opacity:0.45;font-style:italic">${l.userLabel}</td>` : '<td></td>'}
-    </tr>`).join('')}
-  </table>
-  ${allLines.length === 0 ? `<div style="opacity:0.4;font-style:italic">No connections in this diagram.</div>` : ''}
-</div>`
-      }
-
-      const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>${APP_NAME} — Signal Flow Export</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: ${color ? '#0a0a12' : '#ffffff'}; font-family: -apple-system, sans-serif; }
-    img { max-width: 100%; display: block; }
-  </style>
-</head>
-<body>
-  <img src="${dataUrl}" alt="Signal flow diagram" />
-  ${legendHtml}
-</body>
-</html>`
-
+      const { dataUrl, size } = await captureCanvas()
+      updateSettings({ exportTheme: theme })
+      const html = buildExportHtml({
+        dataUrl, imgSize: size, rows, config: cfg, theme,
+        appTitle: `${APP_NAME} ${APP_VERSION} — Signal Flow Export`,
+        includeLegend: legend,
+      })
       await platform.exportImage(html, { format: 'html' })
       closeModal()
     } catch (e) {
@@ -205,13 +169,18 @@ export default function ExportModal() {
           <button className="modal-close" onClick={closeModal}>×</button>
         </div>
 
-        <div className="modal-body">
-          {/* Options */}
-          <div className="export-options">
-            <label className="export-option">
-              <input type="checkbox" checked={color} onChange={e => setColor(e.target.checked)} />
-              <span>{t('colorOption')}</span>
-            </label>
+        <div className="modal-body" style={{ maxHeight: '68vh', overflowY: 'auto' }}>
+          <div className="field-section-title">{t('exportTheme')}</div>
+          <div className="export-options" style={{ flexDirection: 'row', gap: 16 }}>
+            {['light', 'dark'].map(v => (
+              <label key={v} className="export-option">
+                <input type="radio" name="exportTheme" checked={theme === v} onChange={() => setTheme(v)} />
+                <span>{v === 'light' ? t('themeLightPrint') : t('themeDarkExport')}</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="export-options" style={{ marginTop: 10 }}>
             <label className="export-option">
               <input type="checkbox" checked={legend} onChange={e => setLegend(e.target.checked)} />
               <span>{t('includeLegend')}</span>
@@ -224,18 +193,54 @@ export default function ExportModal() {
             )}
           </div>
 
-          {/* Legend preview */}
           {legend && (
-            <div style={{marginTop: 14}}>
-              <div className="field-section-title">{t('legendFormat')}</div>
-              <div className="legend-example" style={{marginTop: 6}}>
-                <span style={{color:'#3B82F6',fontWeight:'bold'}}>[XLR]</span>
-                {'  RACK MIX OUT 1/2 (XLR) → FOH CH 3/4 (XLR)'}
+            <div style={{ marginTop: 14 }}>
+              <div className="field-section-title">{t('legendLayout')}</div>
+              <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                <select className="export-select" value={cfg.layout} onChange={e => patchCfg({ layout: e.target.value })}>
+                  <option value="below">{t('layoutBelow')}</option>
+                  <option value="side">{t('layoutSide')}</option>
+                </select>
+                <select className="export-select" value={cfg.columns} onChange={e => patchCfg({ columns: Number(e.target.value) })}>
+                  {[1, 2, 3].map(n => <option key={n} value={n}>{t('legendColumns')}: {n}</option>)}
+                </select>
               </div>
+
+              <div className="field-section-title" style={{ marginTop: 12 }}>{t('legendGroupBy')}</div>
+              <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                <select className="export-select" value={cfg.groupBy}
+                        onChange={e => patchCfg({ groupBy: e.target.value, groupOrder: [] })}>
+                  {GROUP_BY.map(g => <option key={g} value={g}>{t('groupBy_' + g)}</option>)}
+                </select>
+                {cfg.groupBy === 'device' && (
+                  <select className="export-select" value={cfg.ioOrder} onChange={e => patchCfg({ ioOrder: e.target.value })}>
+                    {IO_ORDER.map(o => <option key={o} value={o}>{t('ioOrder_' + o)}</option>)}
+                  </select>
+                )}
+              </div>
+
+              {groupNames.length > 1 && (
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4 }}>{t('groupOrderTitle')}</div>
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 4, maxHeight: 150, overflowY: 'auto' }}>
+                    {groupNames.map((name, i) => (
+                      <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 6px', fontSize: 12 }}>
+                        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+                        <button className="props-btn" style={{ flex: '0 0 auto', width: 32, padding: '0 6px' }} disabled={i === 0}
+                                onClick={() => patchCfg({ groupOrder: moveGroup(groupNames, name, -1) })}>▲</button>
+                        <button className="props-btn" style={{ flex: '0 0 auto', width: 32, padding: '0 6px' }} disabled={i === groupNames.length - 1}
+                                onClick={() => patchCfg({ groupOrder: moveGroup(groupNames, name, 1) })}>▼</button>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="props-btn" style={{ marginTop: 4, flex: '0 0 auto', width: 'auto', padding: '2px 10px' }} onClick={() => patchCfg({ groupOrder: [] })}>
+                    {t('groupOrderReset')}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Format info */}
           <div className="export-format-info">
             <div className="export-format-row">
               <span className="export-format-badge">PNG</span>
@@ -243,7 +248,7 @@ export default function ExportModal() {
             </div>
             <div className="export-format-row">
               <span className="export-format-badge">HTML</span>
-              <span>Diagram + signal legend — open in any browser</span>
+              <span>Diagram + signal legend — open in any browser, print-ready</span>
             </div>
           </div>
         </div>

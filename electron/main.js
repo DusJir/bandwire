@@ -132,7 +132,8 @@ ipcMain.handle('export-image', async (_, content, options) => {
   const defaults = { png: 'signal-flow.png', html: 'bandwire-export.html', svg: 'signal-flow.svg' }
   const result = await dialog.showSaveDialog({
     title: 'Export Diagram',
-    defaultPath: path.join(app.getPath('documents'), defaults[fmt] || 'bandwire-export.html'),
+    defaultPath: path.join(app.getPath('documents'),
+      options.filename ? `${options.filename}.${fmt}` : (defaults[fmt] || 'bandwire-export.html')),
     filters: filters[fmt] || filters.html,
   })
   if (result.canceled) return false

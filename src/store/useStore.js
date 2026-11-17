@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { platform } from '../platform'
 import { FACTORY_DEVICE_META } from '../constants/factoryDeviceMeta'
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow'
+import { emptyLoadData, normalizeLoadData, addItem as ldAdd, updateItem as ldUpdate, removeItem as ldRemove, autoPlace as ldAutoPlace } from '../utils/load'
 
 // ── Scene helpers ────────────────────────────────────────────────
 const emptyScene = (id = 'main', label = 'Main') => ({
@@ -238,7 +239,8 @@ const useStore = create((set, get) => ({
     enforceConnectorTypes: false,
     defaultExportFormat: 'html',
     defaultExportLegend: true,
-    defaultExportColor:  true,
+    exportTheme:         'light',   // 'light' (print-friendly) | 'dark' — independent of app theme
+    exportLegend:        { groupBy: 'none', groupOrder: [], ioOrder: 'in-first', layout: 'below', columns: 1 },
     stageFohColor:            '#EF4444',
     stagePersonalColor:       '#6366f1',
     defaultStageCount:        1,
@@ -249,7 +251,16 @@ const useStore = create((set, get) => ({
   },
 
   // ── Stage Plot ───────────────────────────────────────────────
-  appMode: 'schema',   // 'schema' | 'stage'
+  appMode: 'schema',   // 'schema' | 'stage' | 'load' | 'van'
+
+  // ── Load List + Van planner (shared item list) ───────────────
+  loadData: emptyLoadData(),
+  _setLoad: (fn) => set(state => ({ loadData: fn(state.loadData), isDirty: true })),
+  addLoadItem:    (partial)     => get()._setLoad(ld => ldAdd(ld, partial)),
+  updateLoadItem: (id, patch)   => get()._setLoad(ld => ldUpdate(ld, id, patch)),
+  removeLoadItem: (id)          => get()._setLoad(ld => ldRemove(ld, id)),
+  autoPlaceLoadItem: (id)       => get()._setLoad(ld => ldAutoPlace(ld, id)),
+  setVehicle:     (patch)       => get()._setLoad(ld => ({ ...ld, vehicle: { ...ld.vehicle, ...patch } })),
   stageData: {
     initialized: false,
     stages:      [],
@@ -376,7 +387,7 @@ const useStore = create((set, get) => ({
       }
       return out
     }
-    const data = { version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary, customCableTypes, stageData }
+    const data = { version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary, customCableTypes, stageData, loadData: get().loadData }
     // Strip notes from export if settings say so
     if (!settings.exportIncludeNotes) {
       delete data._notes
@@ -475,6 +486,7 @@ const useStore = create((set, get) => ({
       customCableTypes: data.customCableTypes || [],
       deviceLibrary:   data.deviceLibrary    || [],
       stageData:       data.stageData ? { initialized: false, stages: [], nodes: [], edges: [], rider: {}, ...data.stageData } : { initialized: false, stages: [], nodes: [], edges: [], rider: {} },
+      loadData:          normalizeLoadData(data.loadData),
       selectedNodeId:  null,
       selectedEdgeId:  null,
     })
@@ -502,6 +514,7 @@ const useStore = create((set, get) => ({
       version: '1.0', projectName, scenes: stripSrc(scenes), deviceLibrary,
       customCableTypes: get().customCableTypes,
       stageData: get().stageData,
+      loadData: get().loadData,
     }, null, 2)
     const fp = await platform.saveProject(content, currentFilePath)
     if (fp) {
@@ -559,6 +572,7 @@ const useStore = create((set, get) => ({
       deviceLibrary:      data.deviceLibrary      || [],
       customCableTypes:   data.customCableTypes   || [],
       stageData:          data.stageData ? { initialized: false, stages: [], nodes: [], edges: [], rider: {}, ...data.stageData } : { initialized: false, stages: [], nodes: [], edges: [], rider: {} },
+      loadData:          normalizeLoadData(data.loadData),
       isDirty:         false,
       selectedNodeId:  null,
       selectedEdgeId:  null,
@@ -575,6 +589,7 @@ const useStore = create((set, get) => ({
     selectedEdgeId:  null,
     deviceLibrary:   [],
     stageData:       { initialized: false, stages: [], nodes: [], edges: [], rider: {} },
+    loadData:        emptyLoadData(),
       libraryId:       null,
   }),
 }))

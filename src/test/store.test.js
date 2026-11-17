@@ -186,3 +186,35 @@ describe('modal', () => {
     expect(useStore.getState().modalPayload).toBeNull()
   })
 })
+
+// ── Load List persistence ────────────────────────────────────────
+describe('loadData', () => {
+  beforeEach(() => { act(() => useStore.getState().newProject()) })
+
+  it('starts empty and marks the project dirty on change', () => {
+    expect(useStore.getState().loadData.items).toEqual([])
+    act(() => useStore.getState().addLoadItem({ name: 'Mixer' }))
+    expect(useStore.getState().loadData.items).toHaveLength(1)
+    expect(useStore.getState().isDirty).toBe(true)
+  })
+  it('is part of the saved project content', () => {
+    act(() => useStore.getState().addLoadItem({ name: 'Mixer', category: 'FOH' }))
+    act(() => useStore.getState().setVehicle({ length: 420 }))
+    const saved = JSON.parse(useStore.getState()._buildProjectContent())
+    expect(saved.loadData.items[0].name).toBe('Mixer')
+    expect(saved.loadData.vehicle.length).toBe(420)
+  })
+  it('newProject clears it', () => {
+    act(() => useStore.getState().addLoadItem({ name: 'Mixer' }))
+    act(() => useStore.getState().newProject())
+    expect(useStore.getState().loadData.items).toEqual([])
+  })
+  it('case rules are enforced through the store', () => {
+    act(() => useStore.getState().addLoadItem({ name: 'Case', isCase: true }))
+    act(() => useStore.getState().addLoadItem({ name: 'Item' }))
+    const [c, i] = useStore.getState().loadData.items
+    act(() => useStore.getState().updateLoadItem(i.id, { parentId: c.id }))
+    act(() => useStore.getState().removeLoadItem(c.id))
+    expect(useStore.getState().loadData.items[0].parentId).toBeNull()
+  })
+})

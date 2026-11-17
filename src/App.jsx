@@ -6,6 +6,9 @@ import Canvas from './components/Canvas/Canvas'
 import PropertiesPanel from './components/PropertiesPanel/PropertiesPanel'
 import AddDeviceModal from './components/Modals/AddDeviceModal'
 import ExportModal    from './components/Modals/ExportModal'
+import LoadListPanel  from './components/Load/LoadListPanel'
+import VanPlanner     from './components/Load/VanPlanner'
+import { exportLoadList, exportVanPlan } from './components/Load/loadExport'
 import UpdateToast    from './components/UpdateToast'
 import StageCanvas       from './components/Stage/StageCanvas'
 import LibraryModal      from './components/Modals/LibraryModal'
@@ -47,7 +50,10 @@ export default function App() {
       // Ctrl+E — export
       if (e.key === 'e' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
-        const st = useStore.getState(); st.openModal(st.appMode === 'stage' ? 'stageExport' : 'export')
+        const st = useStore.getState()
+        if (st.appMode === 'load') exportLoadList()
+        else if (st.appMode === 'van') exportVanPlan()
+        else st.openModal(st.appMode === 'stage' ? 'stageExport' : 'export')
         return
       }
       // Escape — close modal / deselect
@@ -61,6 +67,7 @@ export default function App() {
       // Delete / Backspace — delete selected (not in input)
       if (!inInput && (e.key === 'Delete' || e.key === 'Backspace')) {
         const state = useStore.getState()
+        if (state.appMode === 'load' || state.appMode === 'van') return
         if (state.appMode === 'stage') {
           // Delete from stage data
           const { selectedNodeId, selectedEdgeId, stageData, updateStageData } = state
@@ -144,7 +151,7 @@ export default function App() {
       openModal('library')
       return
     }
-    if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected()
+    if ((e.key === 'Delete' || e.key === 'Backspace') && !['load', 'van'].includes(useStore.getState().appMode)) deleteSelected()
   }, [saveProject, loadProject, deleteSelected, openModal])
 
   useEffect(() => {
@@ -157,9 +164,13 @@ export default function App() {
     <div className="app">
         <Toolbar />
         <div className="workspace">
-          <Sidebar />
-          {appMode === "schema" ? <Canvas /> : <StageCanvas />}
-          {appMode === "schema" ? <PropertiesPanel /> : <StagePanel />}
+          {appMode === 'load' ? <LoadListPanel />
+           : appMode === 'van' ? <VanPlanner />
+           : <>
+               <Sidebar />
+               {appMode === "schema" ? <Canvas /> : <StageCanvas />}
+               {appMode === "schema" ? <PropertiesPanel /> : <StagePanel />}
+             </>}
         </div>
         {activeModal === 'addDevice' && <AddDeviceModal />}
     {activeModal === 'addCable'  && <AddCableModal />}
