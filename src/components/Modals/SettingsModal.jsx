@@ -253,20 +253,15 @@ export default function SettingsModal() {
                   <div style={{fontSize:11,color:'var(--text-secondary)'}}>Show cable type legend in export</div>
                 </div>
               </label>
-              <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer'}}>
-                <div style={{
-                  width:16,height:16,borderRadius:3,flexShrink:0,
-                  border:`2px solid ${settings.defaultExportColor?'var(--accent)':'var(--border-active)'}`,
-                  background:settings.defaultExportColor?'var(--accent)':'transparent',
-                  display:'flex',alignItems:'center',justifyContent:'center',
-                }} onClick={() => updateSettings({ defaultExportColor: !settings.defaultExportColor })}>
-                  {settings.defaultExportColor && <span style={{color:'white',fontSize:10,fontWeight:700}}>✓</span>}
-                </div>
-                <div>
-                  <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)'}}>Color export</div>
-                  <div style={{fontSize:11,color:'var(--text-secondary)'}}>Uncheck for black & white</div>
-                </div>
-              </label>
+              <div style={{fontSize:13,fontWeight:600,color:'var(--text-primary)',marginTop:4}}>Export theme</div>
+              <RadioGroup
+                value={settings.exportTheme || 'light'}
+                onChange={v => updateSettings({ exportTheme: v })}
+                options={[
+                  { value: 'light', label: 'Light (print-friendly)', hint: 'Black on white — saves ink, independent of the app theme' },
+                  { value: 'dark',  label: 'Dark',                   hint: 'Dark background, as on screen' },
+                ]}
+              />
             </div>
           </Section>
 

@@ -215,8 +215,13 @@ export const platform = {
   exportImage: async (dataUrl, opts) => {
     if (isElectron()) return window.electronAPI.exportImage(dataUrl, opts)
     // PWA: direct download
+    if (opts?.format === 'png') {
+      const blob = await (await fetch(dataUrl)).blob()
+      downloadFile(blob, (opts.filename || 'bandwire-export') + '.png', 'image/png')
+      return true
+    }
     const ext  = opts?.format === 'svg' ? 'svg' : 'html'
-    downloadFile(dataUrl, 'bandwire-export.' + ext, ext === 'html' ? 'text/html' : 'image/svg+xml')
+    downloadFile(dataUrl, (opts?.filename || 'bandwire-export') + '.' + ext, ext === 'html' ? 'text/html' : 'image/svg+xml')
     return true
   },
 

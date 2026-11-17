@@ -3,6 +3,7 @@ import useStore from '../../store/useStore'
 import { platform } from '../../platform'
 import { APP_VERSION } from '../../version'
 import LangSelector from './LangSelector'
+import { exportLoadList, exportVanPlan } from '../Load/loadExport'
 
 import logoSvg        from '../../assets/app-icons/bandwire-logo.svg'
 import newSvg         from '../../assets/app-icons/app-new.svg'
@@ -103,7 +104,7 @@ export default function Toolbar() {
       <div className="toolbar-sep" />
 
       <button className="tb-btn"
-        onClick={() => openModal(appMode === 'stage' ? 'stageExport' : 'export')}
+        onClick={() => appMode === 'load' ? exportLoadList() : appMode === 'van' ? exportVanPlan() : openModal(appMode === 'stage' ? 'stageExport' : 'export')}
         title="Export (Ctrl+E)"
       >
         <TbIcon name="app-export" /> {t('export')}
@@ -123,6 +124,16 @@ export default function Toolbar() {
           onClick={() => setAppMode('stage')}
           title="Stage plot"
         ><TbIcon name="app-stage" /> Stage</button>
+        <button
+          className={'mode-btn' + (appMode === 'load' ? ' active' : '')}
+          onClick={() => setAppMode('load')}
+          title={t('ldTitle')}
+        >📋 {t('modeLoad')}</button>
+        <button
+          className={'mode-btn' + (appMode === 'van' ? ' active' : '')}
+          onClick={() => setAppMode('van')}
+          title={t('vanTitle')}
+        >🚐 {t('modeVan')}</button>
       </div>
 
       <div className="toolbar-sep" />

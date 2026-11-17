@@ -56,6 +56,18 @@ export default function ManualModal() {
 
           <Section title={t('mExport')}>
             <P k="mExportText" />
+            <Sub title={t('mExportPrint')} />
+            <P k="mExportPrintText" />
+            <Sub title={t('mExportLegendGroups')} />
+            <P k="mExportLegendGroupsText" />
+          </Section>
+
+          <Section title={t('mLoad')}>
+            <P k="mLoadText" />
+          </Section>
+
+          <Section title={t('mVan')}>
+            <P k="mVanText" />
           </Section>
 
           <Section title={t('mIconLibrary')}>

@@ -1209,3 +1209,52 @@ body {
   pointer-events: none !important;
   cursor: default !important;
 }
+
+/* Export modal selects */
+.export-select {
+  background: var(--bg-input); border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 8px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none;
+}
+.export-select:focus { border-color: var(--accent); }
+
+/* ── Load List ─────────────────────────────────────────────────── */
+.ld-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; padding: 14px 18px; overflow: hidden; background: var(--bg-deep); }
+.ld-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.ld-title { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.ld-sub { font-size: 12px; color: var(--text-secondary); }
+.ld-actions { display: flex; gap: 8px; }
+.ld-actions .props-btn, .van-actions .props-btn { flex: 0 0 auto; width: auto; padding: 4px 12px; }
+.ld-colhead, .ld-row { display: flex; align-items: center; gap: 6px; }
+.ld-colhead { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-secondary); padding: 0 0 4px; border-bottom: 1px solid var(--border); }
+.ld-body { flex: 1; overflow: auto; margin-top: 4px; }
+.ld-section { margin-bottom: 10px; }
+.ld-sec-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--accent); padding: 6px 0 2px; }
+.ld-row { padding: 2px 0; border-bottom: 1px solid var(--border); }
+.ld-row.is-case { background: var(--accent-dim); }
+.ld-name { flex: 1 1 160px; min-width: 120px; }
+.ld-note { flex: 1 1 140px; min-width: 100px; }
+.ld-input { background: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; padding: 3px 6px; color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; min-width: 0; }
+.ld-input:focus { border-color: var(--accent); }
+.ld-input:disabled { opacity: .45; }
+.ld-x { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; width: 22px; font-size: 13px; flex: 0 0 22px; }
+.ld-x:hover { color: var(--danger); }
+.ld-empty { color: var(--text-secondary); font-style: italic; font-size: 13px; padding: 20px 0; }
+.ld-hint { font-size: 11px; color: var(--text-secondary); padding-top: 8px; }
+
+/* ── Van planner ───────────────────────────────────────────────── */
+.van-panel { flex: 1; display: flex; min-width: 0; min-height: 0; background: var(--bg-deep); }
+.van-side { width: 270px; flex: 0 0 270px; padding: 10px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.van-views { flex: 1; min-width: 0; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.van-view-top { max-width: 900px; width: 100%; margin: 0 auto; }
+.van-view-row { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; max-width: 1100px; width: 100%; margin: 0 auto; }
+.van-box { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px; }
+.van-box-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-secondary); margin-bottom: 6px; }
+.van-num { display: flex; flex-direction: column; font-size: 10px; color: var(--text-secondary); gap: 2px; }
+.van-unit { display: flex; align-items: center; gap: 6px; padding: 3px 4px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.van-unit:hover { background: var(--bg-hover); }
+.van-unit.sel { background: var(--accent-dim); }
+.van-sw { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 10px; }
+.van-un-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.van-un-dim { font-size: 10px; color: var(--text-secondary); }
+.van-problem { font-size: 12px; color: var(--danger); cursor: pointer; padding: 1px 0; }
+.van-actions { display: flex; }
