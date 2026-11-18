@@ -1258,3 +1258,14 @@ body {
 .van-un-dim { font-size: 10px; color: var(--text-secondary); }
 .van-problem { font-size: 12px; color: var(--danger); cursor: pointer; padding: 1px 0; }
 .van-actions { display: flex; }
+
+/* ── BandPack 3D ───────────────────────────────────────────────── */
+.van-tabs { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; flex-wrap: wrap; }
+.van-tab { background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-secondary); border-radius: 5px; padding: 3px 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
+.van-tab:hover { color: var(--text-primary); }
+.van-tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--text-primary); }
+.van-tab-sep { width: 1px; height: 18px; background: var(--border); margin: 0 6px; }
+.van-grav { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-secondary); cursor: pointer; }
+.van-3d { position: relative; flex: 1; min-height: 420px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-surface); overflow: hidden; }
+.van-3d-host { position: absolute; inset: 0; }
+.van-3d-hint { position: absolute; left: 10px; bottom: 6px; font-size: 11px; color: var(--text-secondary); pointer-events: none; }

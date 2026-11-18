@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useStore from '../../store/useStore'
 import {
   VEHICLE_PRESETS, VIEWS, topLevel, boxOf, projectBox, findProblems, moveInView, rotateItem, colorFor, loadingSequence,
 } from '../../utils/load'
 import { exportVanPlan } from './loadExport'
+// three.js is only needed here — keep it out of the main bundle
+const Van3D = lazy(() => import('./Van3D'))
 
 const SIZE = { x: 'length', y: 'width', z: 'height' }
 
@@ -98,7 +100,11 @@ export default function VanPlanner() {
   const update = useStore(s => s.updateLoadItem)
   const setVehicle = useStore(s => s.setVehicle)
   const autoPlace = useStore(s => s.autoPlaceLoadItem)
+  const settle = useStore(s => s.settleLoad)
   const [selectedId, setSelectedId] = useState(null)
+  const [tab, setTab] = useState('3d')            // '3d' | '2d'
+  const [gravity, setGravity] = useState(true)
+  const [camPreset, setCamPreset] = useState(null)
   const drag = useRef(null)
 
   const { items, vehicle } = loadData
@@ -171,13 +177,46 @@ export default function VanPlanner() {
         </div>
       </div>
 
-      {/* Middle: three views */}
+      {/* Middle: 3D scene or the three 2D views */}
       <div className="van-views">
-        <div className="van-view-top"><VanView {...mk('top')} /></div>
-        <div className="van-view-row">
-          <VanView {...mk('side')} />
-          <VanView {...mk('rear')} />
+        <div className="van-tabs">
+          <button className={'van-tab' + (tab === '3d' ? ' active' : '')} onClick={() => setTab('3d')}>3D</button>
+          <button className={'van-tab' + (tab === '2d' ? ' active' : '')} onClick={() => setTab('2d')}>2D</button>
+          {tab === '3d' && (
+            <>
+              <span className="van-tab-sep" />
+              {['iso', 'top', 'side', 'rear'].map(n => (
+                <button key={n} className="van-tab" onClick={() => setCamPreset({ name: n, nonce: Math.random() })}>{t('vanCam_' + n)}</button>
+              ))}
+              <span className="van-tab-sep" />
+              <label className="van-grav" title={t('vanGravityHint')}>
+                <input type="checkbox" checked={gravity} onChange={e => { setGravity(e.target.checked); if (e.target.checked) settle() }} /> {t('vanGravity')}
+              </label>
+            </>
+          )}
         </div>
+
+        {tab === '3d' ? (
+          <div className="van-3d">
+            <Suspense fallback={<div className="ld-empty" style={{ padding: 20 }}>…</div>}>
+            <Van3D items={items} vehicle={vehicle} problems={problems} selectedId={selectedId} gravity={gravity}
+                   preset={camPreset} labels={{ rear: t('vanRear'), cab: t('vanCab') }}
+                   onSelect={setSelectedId}
+                   onDrag={(id, p) => { const it = useStore.getState().loadData.items.find(i => i.id === id); if (it?.pos) update(id, { pos: { ...it.pos, ...p } }) }}
+                   onDragEnd={() => { if (gravity) settle() }}
+                   onUnsupported={() => setTab('2d')} />
+            </Suspense>
+            <div className="van-3d-hint">{t('vanHint3d')}</div>
+          </div>
+        ) : (
+          <>
+            <div className="van-view-top"><VanView {...mk('top')} /></div>
+            <div className="van-view-row">
+              <VanView {...mk('side')} />
+              <VanView {...mk('rear')} />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Right: selected + problems */}

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   emptyLoadData, normalizeLoadData, addItem, updateItem, removeItem, buildSections, totals,
   footprint, boxOf, projectBox, findProblems, moveInView, rotateItem, autoPlace, loadingSequence, topLevel,
+  supportHeight, settleItems, snapPosition,
 } from '../utils/load'
 
 const build = () => {
@@ -149,5 +150,57 @@ describe('loading sequence', () => {
     ld = updateItem(ld, byName(ld, 'Strat').id, { parentId: byName(ld, 'Guitar case').id })
     expect(loadingSequence(ld.items).map(i => i.name)).toEqual(['Mixer', 'Guitar case', 'Cables'])
     expect(topLevel(ld.items)).toHaveLength(3)
+  })
+})
+
+describe('stacking, gravity, snapping', () => {
+  const v = { length: 300, width: 160, height: 140 }
+  const mkld = (...specs) => {
+    let ld = { ...emptyLoadData(), vehicle: v }
+    specs.forEach(sp => { ld = addItem(ld, sp) })
+    return ld
+  }
+  const place = (ld, name, pos) => updateItem(ld, ld.items.find(i => i.name === name).id, { pos: { rot: 0, ...pos } })
+  const get = (ld, n) => ld.items.find(i => i.name === n)
+
+  it('supportHeight is the top of whatever lies under the footprint', () => {
+    let ld = mkld({ name: 'A', l: 50, w: 50, h: 30 }, { name: 'B', l: 40, w: 40, h: 20 })
+    ld = place(ld, 'A', { x: 0, y: 0, z: 0 })
+    ld = place(ld, 'B', { x: 100, y: 100, z: 0 })
+    const b = get(ld, 'B')
+    expect(supportHeight(ld.items, b.id, 10, 10, 0)).toBe(30)     // over A
+    expect(supportHeight(ld.items, b.id, 60, 0, 0)).toBe(0)       // beside A (touching edge is not overlap)
+    expect(supportHeight(ld.items, b.id, 100, 100, 0)).toBe(0)    // over itself only
+  })
+  it('settle drops floating items to the floor and keeps stacks together', () => {
+    let ld = mkld({ name: 'A', l: 50, w: 50, h: 30 }, { name: 'B', l: 40, w: 40, h: 20 }, { name: 'C', l: 30, w: 30, h: 10 })
+    ld = place(ld, 'A', { x: 0, y: 0, z: 0 })
+    ld = place(ld, 'B', { x: 5, y: 5, z: 70 })     // floating over A
+    ld = place(ld, 'C', { x: 200, y: 100, z: 40 }) // floating over nothing
+    const s = settleItems(ld.items)
+    expect(get({ items: s }, 'B').pos.z).toBe(30)
+    expect(get({ items: s }, 'C').pos.z).toBe(0)
+  })
+  it('removing the bottom item makes the one on top fall', () => {
+    let ld = mkld({ name: 'A', l: 50, w: 50, h: 30 }, { name: 'B', l: 40, w: 40, h: 20 })
+    ld = place(ld, 'A', { x: 0, y: 0, z: 0 })
+    ld = place(ld, 'B', { x: 5, y: 5, z: 30 })
+    ld = place(ld, 'A', { x: 150, y: 0, z: 0 })    // pulled out from under B
+    expect(get({ items: settleItems(ld.items) }, 'B').pos.z).toBe(0)
+  })
+  it('snaps to walls and neighbour edges within tolerance, not beyond', () => {
+    let ld = mkld({ name: 'A', l: 50, w: 50, h: 30 }, { name: 'B', l: 40, w: 40, h: 20 })
+    ld = place(ld, 'A', { x: 100, y: 0, z: 0 })
+    const b = get(ld, 'B')
+    expect(snapPosition(b, { x: 153, y: 3 }, ld.items, v)).toEqual({ x: 150, y: 0 })   // A.x1=150 and wall y=0
+    expect(snapPosition(b, { x: 180, y: 60 }, ld.items, v)).toEqual({ x: 180, y: 60 })  // nothing close
+    expect(snapPosition(b, { x: 3, y: 120 }, ld.items, v)).toEqual({ x: 0, y: 120 })     // rear wall
+    expect(snapPosition(b, { x: 258, y: 60 }, ld.items, v).x).toBe(260)                 // front wall: x1 = 300
+  })
+  it('snap never leaves the cargo area', () => {
+    const ld = mkld({ name: 'B', l: 40, w: 40, h: 20 })
+    const p = snapPosition(ld.items[0], { x: 999, y: -50 }, ld.items, v)
+    expect(p.x).toBeLessThanOrEqual(260)
+    expect(p.y).toBeGreaterThanOrEqual(0)
   })
 })

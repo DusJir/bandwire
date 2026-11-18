@@ -243,7 +243,7 @@ export function colorFor(item) {
   const key = item.category || item.name || 'x'
   let h = 0
   for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0
-  return `hsl(${h % 360} 55% 52%)`
+  return `hsl(${h % 360}, 55%, 52%)`
 }
 
 /** Placed units sorted by loadOrder (unordered last, then by name). */
@@ -252,4 +252,77 @@ export function loadingSequence(items) {
     const ao = a.loadOrder ?? Infinity, bo = b.loadOrder ?? Infinity
     return ao === bo ? (a.name || '').localeCompare(b.name || '') : ao - bo
   })
+}
+
+// ── Stacking, gravity and snapping (3D BandPack) ─────────────────
+
+const xyOverlap = (a, b) => overlap1(a.x0, a.x1, b.x0, b.x1) && overlap1(a.y0, a.y1, b.y0, b.y1)
+
+/** Height of the highest surface under a footprint at (x, y) — the z an item would rest at. */
+export function supportHeight(items, id, x, y, rot) {
+  const item = items.find(i => i.id === id)
+  if (!item) return 0
+  const f = rot === 90 ? { l: item.w, w: item.l } : { l: item.l, w: item.w }
+  const cand = { x0: x, x1: x + f.l, y0: y, y1: y + f.w }
+  let z = 0
+  for (const o of topLevel(items)) {
+    if (o.id === id || !o.pos) continue
+    const b = boxOf(o)
+    if (xyOverlap(cand, b)) z = Math.max(z, b.z1)
+  }
+  return z
+}
+
+/**
+ * Let everything fall onto what is below it. Processes from the bottom up, so a stack
+ * stays together and items left hanging in the air drop to the floor / the next surface.
+ */
+export function settleItems(items) {
+  const placed = topLevel(items).filter(i => i.pos)
+    .sort((a, b) => a.pos.z - b.pos.z || (a.id < b.id ? -1 : 1))
+  const settledBoxes = []
+  const newZ = new Map()
+  for (const u of placed) {
+    const f = footprint(u)
+    const foot = { x0: u.pos.x, x1: u.pos.x + f.l, y0: u.pos.y, y1: u.pos.y + f.w }
+    let z = 0
+    for (const sb of settledBoxes) if (xyOverlap(foot, sb)) z = Math.max(z, sb.z1)
+    newZ.set(u.id, z)
+    settledBoxes.push({ ...foot, z1: z + u.h })
+  }
+  return items.map(i => (newZ.has(i.id) && i.pos.z !== newZ.get(i.id) ? { ...i, pos: { ...i.pos, z: newZ.get(i.id) } } : i))
+}
+
+/**
+ * Magnet: pull a candidate position (x, y) to walls and to the edges of neighbours
+ * when they are closer than `tol` cm. Nobody measures — items should simply click together.
+ */
+export function snapPosition(item, pos, items, vehicle, tol = 8) {
+  const rot = pos.rot ?? item.pos?.rot ?? 0
+  const f = rot === 90 ? { l: item.w, w: item.l } : { l: item.l, w: item.w }
+  const others = topLevel(items).filter(o => o.id !== item.id && o.pos).map(boxOf)
+  const near = (a0, a1, b0, b1) => Math.min(a1, b1) - Math.max(a0, b0) > -tol   // overlap or within tol
+
+  const pull = (start, size, max, targets) => {
+    let best = null
+    for (const t of targets) {
+      for (const d of [t - start, t - (start + size)]) {
+        if (Math.abs(d) <= tol && (best === null || Math.abs(d) < Math.abs(best))) best = d
+      }
+    }
+    return best === null ? start : start + best
+  }
+
+  const xTargets = [0, vehicle.length]
+  const yTargets = [0, vehicle.width]
+  for (const o of others) {
+    if (near(pos.y, pos.y + f.w, o.y0, o.y1)) xTargets.push(o.x0, o.x1)
+    if (near(pos.x, pos.x + f.l, o.x0, o.x1)) yTargets.push(o.y0, o.y1)
+  }
+  const x = pull(pos.x, f.l, vehicle.length, xTargets)
+  const y = pull(pos.y, f.w, vehicle.width, yTargets)
+  return {
+    x: Math.min(Math.max(0, x), Math.max(0, vehicle.length - f.l)),
+    y: Math.min(Math.max(0, y), Math.max(0, vehicle.width - f.w)),
+  }
 }

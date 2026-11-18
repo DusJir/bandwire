@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { platform } from '../platform'
 import { FACTORY_DEVICE_META } from '../constants/factoryDeviceMeta'
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow'
-import { emptyLoadData, normalizeLoadData, addItem as ldAdd, updateItem as ldUpdate, removeItem as ldRemove, autoPlace as ldAutoPlace } from '../utils/load'
+import { emptyLoadData, normalizeLoadData, addItem as ldAdd, updateItem as ldUpdate, removeItem as ldRemove, autoPlace as ldAutoPlace, settleItems } from '../utils/load'
 
 // ── Scene helpers ────────────────────────────────────────────────
 const emptyScene = (id = 'main', label = 'Main') => ({
@@ -260,6 +260,7 @@ const useStore = create((set, get) => ({
   updateLoadItem: (id, patch)   => get()._setLoad(ld => ldUpdate(ld, id, patch)),
   removeLoadItem: (id)          => get()._setLoad(ld => ldRemove(ld, id)),
   autoPlaceLoadItem: (id)       => get()._setLoad(ld => ldAutoPlace(ld, id)),
+  settleLoad:        ()         => get()._setLoad(ld => ({ ...ld, items: settleItems(ld.items) })),
   setVehicle:     (patch)       => get()._setLoad(ld => ({ ...ld, vehicle: { ...ld.vehicle, ...patch } })),
   stageData: {
     initialized: false,
